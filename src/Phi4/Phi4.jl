@@ -1,4 +1,6 @@
 
+abstract type Phi4 <: LFTworkspace end
+
 struct Phi4Parm <: LattParm
     iL::Tuple{Int64,Int64}
     beta::Float64
@@ -13,6 +15,8 @@ include("Phi4action.jl")
 export action, force!
 
 include("Phi4hmc.jl")
+include("Phi4checks.jl")
+export check_force, reversibility!
 
 
 
