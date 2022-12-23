@@ -6,8 +6,10 @@ function copy!(lftws_dest::LFTworkspace, lftws_src::LFTworkspace, lp::LattParm) 
 function update_momenta!(lftws::LFTworkspace, epsilon, lp::LattParm) end
 function update_fields!(lftws::LFTworkspace, epsilon, lp::LattParm) end
 
-molecular_dynamics!(lftws::LFTworkspace, integr::Leapfrog, lp::LattParm) = leapfrog!(lftws, integr.epsilon, integr.nsteps, lp)
-molecular_dynamics!(lftws::LFTworkspace, integr::OMF4, lp::LattParm) = OMF4!(lftws, integr.epsilon, integr.nsteps, lp)
+molecular_dynamics!(lftws::LFTworkspace, integr::Leapfrog, lp::LattParm) =
+                        leapfrog!(lftws, integr.epsilon, integr.nsteps, lp)
+molecular_dynamics!(lftws::LFTworkspace, integr::OMF4, lp::LattParm) =
+                        OMF4!(lftws, integr.epsilon, integr.nsteps, lp)
 
 function HMC!(lftws::LFTworkspace, integrator::Integrator, lp::LattParm)
     # Create copy of current configuration

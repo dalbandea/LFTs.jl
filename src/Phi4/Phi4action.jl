@@ -18,6 +18,11 @@ function phi4action(phi, Nx, Ny, beta, lambda)
     return act
 end
 
+function phi4action(phi, beta, lambda)
+    Nx = size(phi, 1)
+    Ny = size(phi, 2)
+    return phi4action(phi, Nx, Ny, beta, lambda)
+end
 
 function force!(phiws::Phi4, lp::Phi4Parm) 
     return phi4force!(phiws.frc, phiws.phi, lp.iL[1], lp.iL[2], lp.beta, lp.lambda)
