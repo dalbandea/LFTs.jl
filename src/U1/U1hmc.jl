@@ -47,7 +47,7 @@ end
 # end
 
 function update_fields!(U1ws::U1, epsilon, lp::U1Parm)
-    event = U1_update_field!(CUDAKernels.CUDADevice())(U1ws.U, U1ws.mom, epsilon, ndrange=(lp.iL[1], lp.iL[2]), workgroupsize=lp.kprm.threads)
+    event = U1_update_field!(lp.device)(U1ws.U, U1ws.mom, epsilon, ndrange=(lp.iL[1], lp.iL[2]), workgroupsize=lp.kprm.threads)
     wait(event)
     return nothing
 end
@@ -58,6 +58,6 @@ KernelAbstractions.@kernel function U1_update_field!(U, mom, epsilon)
     i1, i2 = KernelAbstractions.@index(Global, NTuple)
 
     for id in 1:2
-        U[i1,i2,id] = complex(CUDA.cos(epsilon*mom[i1,i2,id]), CUDA.sin(epsilon*mom[i1,i2,id])) * U[i1,i2,id]
+        U[i1,i2,id] = complex(cos(epsilon*mom[i1,i2,id]), sin(epsilon*mom[i1,i2,id])) * U[i1,i2,id]
     end
 end

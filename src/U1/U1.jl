@@ -32,8 +32,6 @@ export Hamiltonian, generate_momenta!, update_fields!, U1_update_field!, update_
 
 to_device(::CUDAKernels.CUDADevice, x) = CUDA.CuArray(x)
 to_device(::ROCKernels.ROCDevice, x) = AMDGPU.ROCArray(x)
-my_reduce(::CUDAKernels.CUDADevice, f::Function, x) = CUDA.reduce(f, x)
-my_reduce(::ROCKernels.ROCDevice, f::Function, x) = AMDGPU.ROCArray(f, x)
 
 
 # Glossary of variable name meanings

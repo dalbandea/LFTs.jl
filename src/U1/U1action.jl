@@ -103,7 +103,7 @@ end
 #     CUDA.@sync begin
 #         CUDA.@cuda threads=threads blocks=blocks U1plaquette!(plaquettes, U, Nx, Ny)
 #     end
-#     S = beta * ( Nx * Ny - CUDA.reduce(+, plaquettes) )
+#     S = beta * ( Nx * Ny - reduce(+, plaquettes) )
 
 #     return S
 # end
@@ -121,7 +121,7 @@ end
 function U1action(plaquettes, U, beta, Nx, Ny, device, threads, blocks)
     event = U1plaquette!(device)(plaquettes, U, Nx, Ny, ndrange=(Nx, Ny), workgroupsize=threads)
     wait(event)
-    S = beta * ( Nx * Ny - my_reduce(device, +, plaquettes) )
+    S = beta * ( Nx * Ny - reduce(+, plaquettes) )
 
     return S
 end
