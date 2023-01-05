@@ -16,10 +16,10 @@ struct U1workspace{T} <: U1
     frc2
     mom
     function U1workspace(::Type{T}, lp::U1Parm) where {T <: Complex}
-        U = CUDA.ones(T, lp.iL..., 2)
-        frc1 = CUDA.ones(Float64, lp.iL..., 2)
-        frc2 = CUDA.ones(Float64, lp.iL..., 2)
-        mom = CUDA.ones(Float64, lp.iL..., 2)
+        U = to_device(lp.device, ones(T, lp.iL..., 2))
+        frc1 = to_device(lp.device, zeros(Float64, lp.iL..., 2))
+        frc2 = similar(frc1)
+        mom = similar(frc1)
         return new{T}(T, U, frc1, frc2, mom)
     end
 end

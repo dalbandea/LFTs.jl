@@ -1,7 +1,9 @@
 
 abstract type U1 <: LFTworkspace end
 
-import CUDA
+import KernelAbstractions
+import CUDA, CUDAKernels
+import AMDGPU, ROCKernels
 
 struct KernelParm
     threads::Tuple{Int64,Int64}
@@ -12,6 +14,7 @@ export KernelParm
 struct U1Parm <: LattParm
     iL::Tuple{Int64,Int64}
     beta::Float64
+    device::Union{KernelAbstractions.Device, ROCKernels.ROCDevice}
     kprm::KernelParm
 end
 export U1Parm
@@ -21,11 +24,16 @@ include("U1fields.jl")
 export U1workspace
 
 include("U1action.jl")
-export action, U1plaquette!
+export action, U1plaquette!, U1action
 
 include("U1hmc.jl")
 # include("Phi4checks.jl")
 export Hamiltonian, generate_momenta!, update_fields!, U1_update_field!, update_momenta!
+
+to_device(::CUDAKernels.CUDADevice, x) = CUDA.CuArray(x)
+to_device(::ROCKernels.ROCDevice, x) = AMDGPU.ROCArray(x)
+my_reduce(::CUDAKernels.CUDADevice, f::Function, x) = CUDA.reduce(f, x)
+my_reduce(::ROCKernels.ROCDevice, f::Function, x) = AMDGPU.ROCArray(f, x)
 
 
 # Glossary of variable name meanings
