@@ -16,10 +16,11 @@ struct CG <: AbstractSolver
     end
 end
 
-invert!(solver::CG, so, A::Function, si, U1ws::U1Nf2, lp::LattParm) = cg!(so, A, si, solver, U1ws, lp)
+
+invert!(solver::CG, so, A::Function, si, lftws::LFTworkspace, lp::LattParm) = cg!(so, A, si, solver, lftws, lp)
 
 
-function cg!(so, A::Function, si, solver::CG, U1ws::U1Nf2, lp::LattParm)
+function cg!(so, A::Function, si, solver::CG, lftws::LFTworkspace, lp::LattParm)
 
     r  = solver.r
     p  = solver.p
@@ -30,13 +31,12 @@ function cg!(so, A::Function, si, solver::CG, U1ws::U1Nf2, lp::LattParm)
     r  .= si
     p  .= si
     norm = mapreduce(x -> abs2(x), +, si)
-    err = zero(U1ws.PRC)
+    err = zero(lftws.PRC)
     
 	    # println( tol)
 	    iterations = 0
     for i in 1:solver.maxiter
-        # A(Ap, tmp, U, p, am0, prm, kprm)
-        A(Ap, tmp, p, U1ws, lp)
+        A(Ap, tmp, p, lftws, lp)
         prod  = dot(p, Ap)
         alpha = norm/prod
 

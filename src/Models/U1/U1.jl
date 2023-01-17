@@ -3,6 +3,11 @@ import KernelAbstractions
 import CUDA, CUDAKernels
 import AMDGPU, ROCKernels
 
+abstract type U1 <: LFTworkspace end
+abstract type U1Quenched <: U1 end
+abstract type U1Nf2 <: U1 end
+
+
 struct KernelParm
     threads::Tuple{Int64,Int64}
     blocks::Tuple{Int64,Int64}

@@ -1,6 +1,6 @@
 
 include("Phi4Upscaledfields.jl")
-export Phi4Upscaledworkspace
+export Phi4Upscaledworkspace, interpolation_upscale
 
 include("Phi4Upscaledaction.jl")
 export action, force!
