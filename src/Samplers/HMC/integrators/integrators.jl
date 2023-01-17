@@ -1,8 +1,8 @@
 abstract type Integrator end
 
-struct Leapfrog <: Integrator 
-    epsilon::Float64
-    nsteps::Int64
+Base.@kwdef struct Leapfrog <: Integrator 
+    epsilon::Float64 = 0.1 
+    nsteps::Int64 = 10
     function Leapfrog(tau::Float64, nsteps::Int64)
         epsilon = tau / nsteps
         return new(epsilon, nsteps)

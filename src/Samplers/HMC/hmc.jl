@@ -1,4 +1,3 @@
-
 # These functions need to be defined for every model (subtype of LFTworkspace)
 ## Mandatory
 function generate_momenta!(lftws::LFTworkspace, lp::LattParm) end
@@ -17,7 +16,7 @@ molecular_dynamics!(lftws::LFTworkspace, integr::Leapfrog, lp::LattParm) =
 molecular_dynamics!(lftws::LFTworkspace, integr::OMF4, lp::LattParm) =
                         OMF4!(lftws, integr.epsilon, integr.nsteps, lp)
 
-function HMC!(lftws::LFTworkspace, integrator::Integrator, lp::LattParm)
+function hmc!(lftws::LFTworkspace, integrator::Integrator, lp::LattParm)
     # Create copy of current configuration
     ws_cp = deepcopy(lftws)
 
