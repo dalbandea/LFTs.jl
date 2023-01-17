@@ -9,18 +9,45 @@ Allocates all the necessary fields for a HMC simulation of a U(1) model:
 - `U`: ``U`` gauge field.
 - `frc`
 """
-struct U1workspace{T} <: U1
+struct U1quenchedworkspace{T} <: U1Quenched
     PRC::Type{T}
     U
     frc1
     frc2
     mom
-    function U1workspace(::Type{T}, lp::U1Parm) where {T <: Complex}
-        U = to_device(lp.device, ones(T, lp.iL..., 2))
-        frc1 = to_device(lp.device, zeros(Float64, lp.iL..., 2))
+    function U1quenchedworkspace(::Type{T}, lp::U1Parm) where {T <: AbstractFloat}
+        U = to_device(lp.device, ones(complex(T), lp.iL..., 2))
+        frc1 = to_device(lp.device, zeros(T, lp.iL..., 2))
         frc2 = similar(frc1)
         mom = similar(frc1)
         return new{T}(T, U, frc1, frc2, mom)
+    end
+end
+
+struct U1Nf2workspace{T} <: U1Nf2
+    PRC::Type{T}
+    U
+    am0
+    X
+    F
+    g5DX
+    frc1 # gauge force
+    frc2 # gauge force
+    pfrc # pf force
+    mom
+    sws::AbstractSolver
+    function U1Nf2workspace(::Type{T}, lp::U1Parm, am0, maxiter::Int64 = 10000,
+            tol::Float64 = 1e-14) where {T <: AbstractFloat}
+        U = to_device(lp.device, ones(complex(T), lp.iL..., 2))
+        X = similar(U)
+        F = similar(U)
+        g5DX = similar(U)
+        frc1 = to_device(lp.device, zeros(T, lp.iL..., 2))
+        frc2 = similar(frc1)
+        pfrc = similar(frc1)
+        mom = similar(frc1)
+        sws = CG(maxiter, tol, X)
+        return new{T}(T, U, am0, X, F, g5DX, frc1, frc2, pfrc, mom, sws)
     end
 end
 

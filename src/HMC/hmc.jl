@@ -1,10 +1,16 @@
 
 # These functions need to be defined for every model (subtype of LFTworkspace)
+## Mandatory
 function generate_momenta!(lftws::LFTworkspace, lp::LattParm) end
 function Hamiltonian(lftws::LFTworkspace, lp::LattParm) end
+function action(lftws::LFTworkspace, lp::LattParm) end
 function copy!(lftws_dest::LFTworkspace, lftws_src::LFTworkspace, lp::LattParm) end
 function update_momenta!(lftws::LFTworkspace, epsilon, lp::LattParm) end
 function update_fields!(lftws::LFTworkspace, epsilon, lp::LattParm) end
+
+## Optional
+function generate_pseudofermions!(lftws::LFTworkspace, lp::LattParm) end
+
 
 molecular_dynamics!(lftws::LFTworkspace, integr::Leapfrog, lp::LattParm) =
                         leapfrog!(lftws, integr.epsilon, integr.nsteps, lp)
@@ -17,6 +23,9 @@ function HMC!(lftws::LFTworkspace, integrator::Integrator, lp::LattParm)
 
     # Generate random momenta
     generate_momenta!(lftws, lp)
+
+    # Initialize pseudofermion and related fields
+    generate_pseudofermions!(lftws, lp)
 
     # Compute initial Hamiltonian
     hini = Hamiltonian(lftws, lp)
