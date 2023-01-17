@@ -1,6 +1,6 @@
 module LFTs
 
-import Random, FFTW
+import Random, FFTW, InteractiveUtils, Dates
 using LinearAlgebra
 
 abstract type LattParm end
@@ -12,5 +12,7 @@ include("Solvers/Solvers.jl")
 export CG, invert!, cg!
 
 include("Models/models.jl")
+
+include("Logs/logs.jl")
 
 end # module

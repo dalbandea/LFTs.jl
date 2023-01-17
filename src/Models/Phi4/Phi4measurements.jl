@@ -1,3 +1,5 @@
+abstract type Phi4Obs <: AbstractObservable end
+
 function magnetization(phi)
     return sum(phi) / length(phi)
 end
@@ -66,3 +68,39 @@ function correlation_matrix(phi)
     return C
 end
 
+
+Base.@kwdef struct AverageOnPoint <: Phi4Obs
+    fileID::String
+    wdir::String
+    filepath::String
+    function AverageOnPoint(wdir::String = "./results/trash/")
+        fileID = "avg_on_pt.txt"
+        return new(fileID, wdir, joinpath(wdir, "measurements", fileID))
+    end
+end
+export AverageOnPoint
+
+
+function average_on_point(Aws, i, j, lp)
+    iu = mod1(i+1, lp.iL[1])
+    id = mod1(i-1, lp.iL[1])
+    ju = mod1(i+1, lp.iL[1])
+    jd = mod1(i-1, lp.iL[1])
+
+    avg = (Aws.phi[iu,ju] + Aws.phi[id,jd] + Aws.phi[id,ju] + Aws.phi[iu,jd])/4
+    # avg = (Aws.phi[iu,j] + Aws.phi[id,j])/2
+    val = Aws.phi[i,j]
+
+    return avg-val
+end
+
+function measure(obs::AverageOnPoint, phiws::Phi4, lp::Phi4Parm)
+
+    dvt = average_on_point(phiws, 1, 1, lp)
+
+    global io_stat = open(obs.filepath, "a")
+    write(io_stat, "$(dvt)\n")
+    close(io_stat)
+
+    return nothing
+end

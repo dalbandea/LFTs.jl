@@ -173,6 +173,7 @@ close(io_stat)
 
 # Initialize Phi4 workspace
 phiws = Phi4Upscaledworkspace(Float64, lp)
+# phiws = Phi4workspace(Float64, lp)
 
 # Initialize fields
 randomize!(phiws, lp)
@@ -197,6 +198,13 @@ for i in 1:n_traj
         phi_t = he_flow(phiws.phi, lp, lp.iL[1]^2 / 64)
         global io_stat = open(susctfile, "a")
         write(io_stat, "$(susceptibility(phi_t))\n")
+        close(io_stat)
+
+        global io_stat = open(corrfile, "a")
+        for value in correlation_function(phiws.phi)
+            write(io_stat, "$(value)\t")
+        end
+        write(io_stat, "\n")
         close(io_stat)
     end
 end
