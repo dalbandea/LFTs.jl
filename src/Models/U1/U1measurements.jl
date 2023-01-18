@@ -1,7 +1,7 @@
 abstract type AbstractCorrelator <: AbstractObservable end
-abstract type U1AbstractCorrelator <: AbstractCorrelator end
+abstract type AbstractU1Correlator <: AbstractCorrelator end
 
-struct U1PionCorrelator <: U1AbstractCorrelator
+struct U1PionCorrelator <: AbstractU1Correlator
     name::String
     ID::String
     filepath::String
@@ -27,7 +27,7 @@ end
 export U1PionCorrelator
 
 
-function invert_sources!(corrws::U1AbstractCorrelator, U1ws::U1Nf2, lp::U1Parm)
+function invert_sources!(corrws::AbstractU1Correlator, U1ws::U1Nf2, lp::U1Parm)
 
     S0 = corrws.S0
     S = corrws.S
@@ -58,7 +58,7 @@ end
 export invert_sources!
 
 
-function pion_correlator_function(corrws::U1AbstractCorrelator, t, lp::U1Parm)
+function pion_correlator_function(corrws::AbstractU1Correlator, t, lp::U1Parm)
 
     Ct = zero(ComplexF64)
     a = zero(ComplexF64)
@@ -83,7 +83,7 @@ function pion_correlator_function(corrws::U1AbstractCorrelator, t, lp::U1Parm)
 end
 
 
-function pion_correlator_function(corrws::U1AbstractCorrelator, lp::U1Parm)
+function pion_correlator_function(corrws::AbstractU1Correlator, lp::U1Parm)
     for t in 1:lp.iL[1]
         corrws.C[t] = pion_correlator_function(corrws, t, lp) |> real
     end
@@ -95,7 +95,7 @@ function measure(corrws::U1PionCorrelator, U1ws::U1Nf2, lp::U1Parm)
     return nothing
 end
 
-struct U1PCACCorrelator <: U1AbstractCorrelator
+struct U1PCACCorrelator <: AbstractU1Correlator
     name::String
     ID::String
     filepath::String
@@ -120,7 +120,7 @@ struct U1PCACCorrelator <: U1AbstractCorrelator
 end
 export U1PCACCorrelator
 
-function pcac_correlation_function(corrws::U1AbstractCorrelator, t, lp::U1Parm)
+function pcac_correlation_function(corrws::AbstractU1Correlator, t, lp::U1Parm)
 
     Ct = zero(ComplexF64)
     a = zero(ComplexF64)
@@ -144,14 +144,14 @@ function pcac_correlation_function(corrws::U1AbstractCorrelator, t, lp::U1Parm)
     return Ct
 end
 
-function pcac_correlation_function(corrws::U1AbstractCorrelator, lp::U1Parm)
+function pcac_correlation_function(corrws::AbstractU1Correlator, lp::U1Parm)
     for t in 1:lp.iL[1]
         corrws.C[t] = pcac_correlation_function(corrws, t, lp)
     end
 end
 
 
-function measure(corrws::U1AbstractCorrelator, U1ws::U1Nf2, lp::U1Parm)
+function measure(corrws::AbstractU1Correlator, U1ws::U1Nf2, lp::U1Parm)
     invert_sources!(corrws, U1ws, lp)
     correlation_function(corrws, lp)
     return nothing
