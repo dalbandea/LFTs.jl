@@ -1,6 +1,6 @@
 module LFTs
 
-import Random, FFTW, InteractiveUtils, Dates
+import Random, FFTW, InteractiveUtils, Dates, DelimitedFiles, Plots
 using LinearAlgebra
 
 abstract type LattParm end

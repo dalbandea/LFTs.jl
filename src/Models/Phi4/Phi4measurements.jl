@@ -1,4 +1,3 @@
-abstract type Phi4Obs <: AbstractObservable end
 
 function magnetization(phi)
     return sum(phi) / length(phi)
@@ -69,38 +68,48 @@ function correlation_matrix(phi)
 end
 
 
-Base.@kwdef struct AverageOnPoint <: Phi4Obs
-    fileID::String
-    wdir::String
+struct Phi4AverageOnPoint <: AbstractObservable
+    name::String
+    ID::String
     filepath::String
-    function AverageOnPoint(wdir::String = "./results/trash/")
-        fileID = "avg_on_pt.txt"
-        return new(fileID, wdir, joinpath(wdir, "measurements", fileID))
+    function Phi4AverageOnPoint(; wdir::String = "./results/trash/", 
+                              name::String = "Average on point", 
+                              ID::String = "avgpt", 
+                              mesdir::String = "measurements/", 
+                              extension::String = ".txt")
+        filepath = joinpath(wdir, mesdir, ID*extension)
+        return new(name, ID, filepath)
     end
 end
-export AverageOnPoint
+export Phi4AverageOnPoint
 
-
-function average_on_point(Aws, i, j, lp)
+function average_on_point(phiws::Phi4, i::Int64, j::Int64, lp::Phi4Parm)
     iu = mod1(i+1, lp.iL[1])
     id = mod1(i-1, lp.iL[1])
-    ju = mod1(i+1, lp.iL[1])
-    jd = mod1(i-1, lp.iL[1])
+    ju = mod1(i+1, lp.iL[2])
+    jd = mod1(i-1, lp.iL[2])
 
-    avg = (Aws.phi[iu,ju] + Aws.phi[id,jd] + Aws.phi[id,ju] + Aws.phi[iu,jd])/4
-    # avg = (Aws.phi[iu,j] + Aws.phi[id,j])/2
-    val = Aws.phi[i,j]
+    avg = (phiws.phi[iu,ju] + phiws.phi[id,jd] + phiws.phi[id,ju] + phiws.phi[iu,jd])/4
+    # avg = (phiws.phi[iu,j] + phiws.phi[id,j])/2
+    val = phiws.phi[i,j]
 
     return avg-val
 end
 
-function measure(obs::AverageOnPoint, phiws::Phi4, lp::Phi4Parm)
-
+function measure(obs::Phi4AverageOnPoint, phiws::Phi4, lp::Phi4Parm)
     dvt = average_on_point(phiws, 1, 1, lp)
 
     global io_stat = open(obs.filepath, "a")
     write(io_stat, "$(dvt)\n")
     close(io_stat)
 
+    return nothing
+end
+
+function analyze(obs::Phi4AverageOnPoint; wdir::String = "./results/trash/")
+    filename = obs.ID*".png"
+    data = vec(DelimitedFiles.readdlm(obs.filepath))
+    pl = Plots.histogram(data)
+    Plots.savefig(pl, joinpath(wdir, filename))
     return nothing
 end

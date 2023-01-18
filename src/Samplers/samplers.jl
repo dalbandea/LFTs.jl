@@ -10,6 +10,8 @@ function measure(observables::Array{T}, lftws::LFTworkspace, lp::LattParm) where
         measure(observable, lftws, lp)
     end
 end 
+function analyze(observable::AbstractObservable) end
+export analyze
 
 
 include("HMC/integrators/integrators.jl")
@@ -49,3 +51,4 @@ function sample_and_measure!(observables::Array{T}, lftws::LFTworkspace, sampler
     end
 end
 export sample_and_measure!
+
