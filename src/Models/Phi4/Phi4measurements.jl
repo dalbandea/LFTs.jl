@@ -108,8 +108,13 @@ end
 
 function analyze(obs::Phi4AverageOnPoint; wdir::String = "./results/trash/")
     filename = obs.ID*".png"
-    data = vec(DelimitedFiles.readdlm(obs.filepath))
+    data = read(obs)
     pl = Plots.histogram(data)
     Plots.savefig(pl, joinpath(wdir, filename))
     return nothing
 end
+
+import Base: read
+
+read(obs::Phi4AverageOnPoint) = vec(DelimitedFiles.readdlm(obs.filepath))
+export read

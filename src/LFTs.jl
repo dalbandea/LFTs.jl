@@ -11,6 +11,8 @@ include("Samplers/samplers.jl")
 include("Solvers/Solvers.jl")
 export CG, invert!, cg!
 
+include("Measurements/measurements.jl")
+
 include("Models/models.jl")
 
 include("Logs/logs.jl")
