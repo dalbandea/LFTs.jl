@@ -1,5 +1,6 @@
 module LFTs
 
+import Base: read, write 
 import Random, FFTW, InteractiveUtils, Dates, DelimitedFiles, Plots
 using LinearAlgebra
 
