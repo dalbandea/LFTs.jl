@@ -68,17 +68,21 @@ function correlation_matrix(phi)
 end
 
 
-struct Phi4AverageOnPoint <: AbstractObservable
+mutable struct Phi4AverageOnPoint <: AbstractScalar
     name::String
     ID::String
     filepath::String
+    result::Float64
+    history::Vector{Float64}
     function Phi4AverageOnPoint(; wdir::String = "./results/trash/", 
                               name::String = "Average on point", 
                               ID::String = "avgpt", 
                               mesdir::String = "measurements/", 
                               extension::String = ".txt")
         filepath = joinpath(wdir, mesdir, ID*extension)
-        return new(name, ID, filepath)
+        result = zero(Float64)
+        history = Vector{Float64}()
+        return new(name, ID, filepath, result, history)
     end
 end
 export Phi4AverageOnPoint
@@ -96,14 +100,8 @@ function average_on_point(phiws::Phi4, i::Int64, j::Int64, lp::Phi4Parm)
     return avg-val
 end
 
-function measure(obs::Phi4AverageOnPoint, phiws::Phi4, lp::Phi4Parm)
-    dvt = average_on_point(phiws, 1, 1, lp)
-
-    global io_stat = open(obs.filepath, "a")
-    write(io_stat, "$(dvt)\n")
-    close(io_stat)
-
-    return nothing
+function (obs::Phi4AverageOnPoint)(phiws::Phi4, lp::Phi4Parm)
+    return average_on_point(phiws, 1, 1, lp)
 end
 
 function analyze(obs::Phi4AverageOnPoint; wdir::String = "./results/trash/")
@@ -114,7 +112,5 @@ function analyze(obs::Phi4AverageOnPoint; wdir::String = "./results/trash/")
     return nothing
 end
 
-import Base: read
 
-read(obs::Phi4AverageOnPoint) = vec(DelimitedFiles.readdlm(obs.filepath))
-export read
+
