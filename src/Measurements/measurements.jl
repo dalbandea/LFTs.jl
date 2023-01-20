@@ -2,23 +2,21 @@ abstract type AbstractObservable end
 abstract type AbstractScalar <: AbstractObservable end
 abstract type AbstractCorrelator <: AbstractObservable end
 
-function measure(observable::AbstractObservable, lftws::LFTworkspace, lp::LattParm) end
+measure!(observable::AbstractObservable, lftws::LFTworkspace, lp::LattParm) = observable(lftws, lp)
 function write(observable::AbstractObservable) end
-function save(observable::AbstractObservable) end
+function save!(observable::AbstractObservable) end
 function read(observable::AbstractObservable) end
 function analyze(observable::AbstractObservable) end
 
-function measure(observables::Array{T}, lftws::LFTworkspace, lp::LattParm) where T <: AbstractObservable 
+function measure!(observables::Array{T}, lftws::LFTworkspace, lp::LattParm) where T <: AbstractObservable 
     for observable in observables
-        measure(observable, lftws, lp)
+        measure!(observable, lftws, lp)
     end
 end 
 
-function measure(observable::AbstractScalar, lftws::LFTworkspace, lp::LattParm)
-    observable.result = observable(lftws, lp)
-    return nothing
-end
-export measure
+export measure!
+
+## AbstractScalar
 
 function write(obs::AbstractScalar)
     global io_stat = open(obs.filepath, "a")
@@ -27,11 +25,34 @@ function write(obs::AbstractScalar)
     return nothing
 end
 
-save(obs::AbstractScalar) = push!(obs.history, obs.result)
+function save!(obs::AbstractScalar)
+    push!(obs.history, obs.result)
+    return nothing
+end
 
 read(obs::AbstractScalar) = vec(DelimitedFiles.readdlm(obs.filepath))
 
 
+## AbstractCorrelator
+
+function write(obs::AbstractCorrelator)
+    global io_stat = open(obs.filepath, "a")
+    write(io_stat, "$(obs.result[1])")
+    for i in 2:length(obs.result)
+        write(io_stat, ",$(obs.result[i])")
+    end
+    write(io_stat, "\n")
+    close(io_stat)
+    return nothing
+end
+
+function save!(obs::AbstractCorrelator)
+    push!(obs.history, obs.result)
+    return nothing
+end
+
+
+## General sampling and measure method
 
 function sample_and_measure!(observables::Array{T}, lftws::LFTworkspace, sampler::AbstractSampler, lp::LattParm; verbose::Bool = false, get_history::Bool = false) where T <: AbstractObservable
 
@@ -50,8 +71,8 @@ function sample_and_measure!(observables::Array{T}, lftws::LFTworkspace, sampler
         if i%sampler.nmeas == 0
             verbose && print("Measuring...\r")
             for observable in observables
-                measure(observable, lftws, lp)
-                get_history ? save(observable) : write(observable)
+                measure!(observable, lftws, lp)
+                get_history ? save!(observable) : write(observable)
             end
         end
     end

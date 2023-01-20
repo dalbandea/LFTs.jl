@@ -101,7 +101,8 @@ function average_on_point(phiws::Phi4, i::Int64, j::Int64, lp::Phi4Parm)
 end
 
 function (obs::Phi4AverageOnPoint)(phiws::Phi4, lp::Phi4Parm)
-    return average_on_point(phiws, 1, 1, lp)
+    obs.result = average_on_point(phiws, 1, 1, lp)
+    return nothing
 end
 
 function analyze(obs::Phi4AverageOnPoint; wdir::String = "./results/trash/")

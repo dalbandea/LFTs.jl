@@ -1,4 +1,3 @@
-abstract type AbstractCorrelator <: AbstractObservable end
 abstract type AbstractU1Correlator <: AbstractCorrelator end
 
 struct U1PionCorrelator <: AbstractU1Correlator
@@ -9,10 +8,11 @@ struct U1PionCorrelator <: AbstractU1Correlator
     R2
     S
     S0
-    C # correlator
+    result::Vector{Float64} # correlator
+    history::Vector{Vector{Float64}}
     function U1PionCorrelator(lp::U1Parm; wdir::String = "./results/trash/", 
                                name::String = "U(1) pion correlator with Nf=2", 
-                               ID::String = "corr", 
+                               ID::String = "corr_pion", 
                                mesdir::String = "measurements/", 
                                extension::String = ".txt")
         filepath = joinpath(wdir, mesdir, ID*extension)
@@ -21,7 +21,8 @@ struct U1PionCorrelator <: AbstractU1Correlator
         S = copy(R1)
         S0 = copy(R1)
         C = zeros(Float64, lp.iL[1])
-        return new(name, ID, filepath, R1, R2, S, S0, C)
+        history = []
+        return new(name, ID, filepath, R1, R2, S, S0, C, history)
     end
 end
 export U1PionCorrelator
@@ -85,11 +86,11 @@ end
 
 function pion_correlator_function(corrws::AbstractU1Correlator, lp::U1Parm)
     for t in 1:lp.iL[1]
-        corrws.C[t] = pion_correlator_function(corrws, t, lp) |> real
+        corrws.result[t] = pion_correlator_function(corrws, t, lp) |> real
     end
 end
 
-function measure(corrws::U1PionCorrelator, U1ws::U1Nf2, lp::U1Parm)
+function (corrws::U1PionCorrelator)(U1ws::U1Nf2, lp::U1Parm)
     invert_sources!(corrws, U1ws, lp)
     pion_correlator_function(corrws, lp)
     return nothing
@@ -103,10 +104,11 @@ struct U1PCACCorrelator <: AbstractU1Correlator
     R2
     S
     S0
-    C # correlator
+    result::Vector{Float64} # correlator
+    history::Vector{Vector{Float64}}
     function U1PCACCorrelator(lp::U1Parm; wdir::String = "./results/trash/", 
                                name::String = "U(1) PCAC correlator with Nf=2", 
-                               ID::String = "corr", 
+                               ID::String = "corr_pcac", 
                                mesdir::String = "measurements/", 
                                extension::String = ".txt")
         filepath = joinpath(wdir, mesdir, ID*extension)
@@ -115,7 +117,8 @@ struct U1PCACCorrelator <: AbstractU1Correlator
         S = copy(R1)
         S0 = copy(R1)
         C = zeros(Float64, lp.iL[1])
-        return new(name, ID, filepath, R1, R2, S, S0, C)
+        history = []
+        return new(name, ID, filepath, R1, R2, S, S0, C, history)
     end
 end
 export U1PCACCorrelator
@@ -146,12 +149,12 @@ end
 
 function pcac_correlation_function(corrws::AbstractU1Correlator, lp::U1Parm)
     for t in 1:lp.iL[1]
-        corrws.C[t] = pcac_correlation_function(corrws, t, lp)
+        corrws.result[t] = pcac_correlation_function(corrws, t, lp)
     end
 end
 
 
-function measure(corrws::AbstractU1Correlator, U1ws::U1Nf2, lp::U1Parm)
+function (corrws::AbstractU1Correlator)(U1ws::U1Nf2, lp::U1Parm)
     invert_sources!(corrws, U1ws, lp)
     correlation_function(corrws, lp)
     return nothing
