@@ -32,6 +32,9 @@ end
 
 read(obs::AbstractScalar) = vec(DelimitedFiles.readdlm(obs.filepath))
 
+function read(::Type{T}, filepath::String; column::Int64 = 1) where T <: AbstractScalar
+    return DelimitedFiles.readdlm(filepath, ',', Float64)[:,1]
+end
 
 ## AbstractCorrelator
 
@@ -49,6 +52,10 @@ end
 function save!(obs::AbstractCorrelator)
     push!(obs.history, obs.result)
     return nothing
+end
+
+function read(::Type{T}, filepath::String) where T <: AbstractCorrelator
+    return DelimitedFiles.readdlm(filepath, ',', Float64)
 end
 
 
