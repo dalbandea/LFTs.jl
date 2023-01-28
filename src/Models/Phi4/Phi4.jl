@@ -1,12 +1,6 @@
 
-abstract type Phi4 <: LFTworkspace end
-
-struct Phi4Parm <: LattParm
-    iL::Tuple{Int64,Int64}
-    beta::Float64
-    lambda::Float64
-end
-export Phi4Parm
+abstract type Phi4 <: AbstractLFT end
+export Phi4
 
 include("Phi4fields.jl")
 export Phi4workspace, randomize! 

@@ -1,6 +1,6 @@
 
-function action(phiws::Phi4, lp::Phi4Parm) where {T}
-    return phi4action(phiws.phi, lp.iL[1], lp.iL[2], lp.beta, lp.lambda)
+function action(phiws::Phi4) where {T}
+    return phi4action(phiws.phi, phiws.params.iL[1], phiws.params.iL[2], phiws.params.beta, phiws.params.lambda)
 end
 
 function phi4action(phi, Nx, Ny, beta, lambda)
@@ -24,8 +24,8 @@ function phi4action(phi, beta, lambda)
     return phi4action(phi, Nx, Ny, beta, lambda)
 end
 
-function force!(phiws::Phi4, lp::Phi4Parm) 
-    return phi4force!(phiws.frc, phiws.phi, lp.iL[1], lp.iL[2], lp.beta, lp.lambda)
+function force!(phiws::Phi4, hmcws::Phi4HMC) 
+    return phi4force!(hmcws.frc, phiws.phi, phiws.params.iL[1], phiws.params.iL[2], phiws.params.beta, phiws.params.lambda)
 end
 
 # Force is computed in place for performance

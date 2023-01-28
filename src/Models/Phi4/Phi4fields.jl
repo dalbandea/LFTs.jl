@@ -1,4 +1,11 @@
 
+Base.@kwdef struct Phi4Parm <: LFTParm
+    iL::Tuple{Int64,Int64}
+    beta::Float64
+    lambda::Float64
+end
+export Phi4Parm
+
 @doc raw"""
     struct Phi4workspace{T}
 
@@ -11,17 +18,32 @@ Allocates all the necessary fields for a HMC simulation of a Phi4 model:
 struct Phi4workspace{T, N} <: Phi4
     PRC::Type{T}
     phi::Array{T, N}
-    frc::Array{T, N}
-    mom::Array{T, N}
+    params::Phi4Parm
     function Phi4workspace(::Type{T}, lp::Phi4Parm) where {T <: AbstractFloat}
         phi = Array{T, 2}(undef, lp.iL...)
-        frc = similar(phi)
-        mom = similar(phi)
-        return new{T, 2}(T, phi, frc, mom)
+        return new{T, 2}(T, phi, lp)
     end
 end
 
-function copy!(phiws_dst::Phi4, phiws_src::Phi4, lp::Phi4Parm)
+function (::Type{Phi4})(::Type{T} = Float64; kwargs...) where {T <: AbstractFloat}
+    return Phi4workspace(T, Phi4Parm(;kwargs...))
+end
+
+struct Phi4HMC <: AbstractHMC
+    params::HMCParams
+    frc
+    mom
+    function Phi4HMC(phiws::Phi4, hmcp::HMCParams)
+        frc = similar(phiws.phi)
+        mom = similar(phiws.phi)
+        return new(hmcp, frc, mom)
+    end
+end
+
+sampler(lftws::Phi4, hmcp::HMCParams) = Phi4HMC(lftws, hmcp)
+
+
+function copy!(phiws_dst::Phi4, phiws_src::Phi4)
     phiws_dst.phi .= phiws_src.phi
     return nothing
 end
@@ -33,7 +55,7 @@ Randomizes:
 
 - `phiws.phi` from Gaussian.
 """
-function randomize!(phiws::Phi4, lp::Phi4Parm)
+function randomize!(phiws::Phi4)
     phiws.phi .= Random.randn(phiws.PRC, size(phiws.phi)...)
     return nothing
 end

@@ -1,6 +1,6 @@
-abstract type Integrator end
+abstract type AbstractIntegrator end
 
-Base.@kwdef struct Leapfrog <: Integrator 
+Base.@kwdef struct Leapfrog <: AbstractIntegrator 
     epsilon::Float64 = 0.1 
     nsteps::Int64 = 10
     function Leapfrog(tau::Float64, nsteps::Int64)
@@ -9,7 +9,7 @@ Base.@kwdef struct Leapfrog <: Integrator
     end
 end
 
-struct OMF4 <: Integrator
+struct OMF4 <: AbstractIntegrator
     epsilon::Float64
     nsteps::Int64
     function OMF4(tau::Float64, nsteps::Int64)

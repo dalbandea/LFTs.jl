@@ -14,8 +14,8 @@ using LinearAlgebra
 # Pkg.develop(path="/home/david/.julia/personal-utils/Utils-david/")
 # using Utils
 
-abstract type LattParm end
-abstract type LFTworkspace end
+abstract type AbstractLFT end
+abstract type LFTParm end
 
 include("Samplers/samplers.jl")
 

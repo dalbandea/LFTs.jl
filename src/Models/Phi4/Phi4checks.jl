@@ -1,16 +1,16 @@
 
-function check_force(phiws::Phi4, lp::Phi4Parm, epsilon)
+function check_force(phiws::Phi4, hmcws::Phi4HMC, epsilon)
     phiws2 = deepcopy(phiws)
 
     # Initial action
-    Si = action(phiws, lp)
+    Si = action(phiws)
 
-    V = lp.iL[1] * lp.iL[2]
-    Nx = lp.iL[1]
-    Ny = lp.iL[2]
+    Nx = phiws.params.iL[1]
+    Ny = phiws.params.iL[2]
+    V = Nx * Ny
 
     # Compute force of configuration
-    force!(phiws, lp)
+    force!(phiws, hmcws)
 
     F_diff = 0.0
 
@@ -18,13 +18,13 @@ function check_force(phiws::Phi4, lp::Phi4Parm, epsilon)
         phiws2.phi[j,i] += epsilon
 
         # Final action
-        Sf = action(phiws2, lp)
+        Sf = action(phiws2)
 
         # Numerical force
         F_num = (Sf - Si)/epsilon
 
         # Analytical force
-        F_ana = phiws.frc[j,i]
+        F_ana = hmcws.frc[j,i]
 
         # Difference
         F_diff = F_ana + F_num
@@ -36,15 +36,15 @@ function check_force(phiws::Phi4, lp::Phi4Parm, epsilon)
 end
 
 
-function reversibility!(phiws::Phi4, epsilon, ns, lp::LattParm)
+function reversibility!(phiws::Phi4, hmcws::Phi4HMC, epsilon, ns)
     phi_cp = copy(phiws.phi)
 
     # Create momenta
-    generate_momenta!(phiws, lp)
+    generate_momenta!(phiws, hmcws)
 
-    leapfrog!(phiws, epsilon, ns, lp)
-    phiws.mom .= -phiws.mom
-    leapfrog!(phiws, epsilon, ns, lp)
+    leapfrog!(phiws, hmcws, epsilon, ns)
+    hmcws.mom .= -hmcws.mom
+    leapfrog!(phiws, hmcws, epsilon, ns)
 
     dphi2 = sum(abs2, phiws.phi .- phi_cp)
 
