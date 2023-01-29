@@ -1,20 +1,4 @@
 
-# function U1plaquette!(plx, U, Nx, Ny)
-
-#     i1 = (CUDA.blockIdx().x - 1) * CUDA.blockDim().x + CUDA.threadIdx().x
-#     i2 = (CUDA.blockIdx().y - 1) * CUDA.blockDim().y + CUDA.threadIdx().y
-
-#     iu1 = mod(i1, Nx) + 1
-#     iu2 = mod(i2, Ny) + 1
-    
-#     plx[i1,i2] = real(U[i1,i2,1] *
-#                       U[iu1,i2,2] *
-#                       conj(U[i1,iu2,1] *
-#                            U[i1,i2,2]))
-    
-#     return nothing
-# end
-
 KernelAbstractions.@kernel function U1plaquette!(plx, U, Nx, Ny)
 
     i1, i2 = @index(Global, NTuple)
@@ -67,12 +51,13 @@ end
 #     return nothing
 # end
 
-function force!(U1ws::U1Quenched, lp::U1Parm)
-    return gauge_force!(U1ws, lp)
+function force!(U1ws::U1Quenched, hmcws::AbstractHMC)
+    return gauge_force!(U1ws, hmcws)
 end
 
-function gauge_force!(U1ws::U1, lp::U1Parm)
-    event = U1quenchedforce!(lp.device)(U1ws.frc1, U1ws.frc2, U1ws.U, lp.beta, lp.iL[1], lp.iL[2], ndrange=(lp.iL[1], lp.iL[2]), workgroupsize=lp.kprm.threads)
+function gauge_force!(U1ws::U1, hmcws::AbstractHMC)
+    lp = U1ws.params.lp
+    event = U1quenchedforce!(lp.device)(hmcws.frc1, hmcws.frc2, U1ws.U, lp.beta, lp.iL[1], lp.iL[2], ndrange=(lp.iL[1], lp.iL[2]), workgroupsize=lp.kprm.threads)
     wait(event)
     return nothing
 end
@@ -92,31 +77,14 @@ KernelAbstractions.@kernel function U1quenchedforce!(frc1, frc2, U, beta, Nx, Ny
     frc2[i1,iu2,1] =  v 
 end
 
-# function action(U1ws::U1workspace, lp::LattParm)
-#     return U1action(U1ws.U, lp.beta, lp.iL[1], lp.iL[2], lp.kprm.threads, lp.kprm.blocks)
-# end
-
-# function U1action(U, beta, Nx, Ny, threads, blocks)
-#     plaquettes = CUDA.CuArray{Float64}(undef, Nx, Ny)
-#     return U1action(plaquettes, U, beta, Nx, Ny, threads, blocks)
-# end
-
-# function U1action(plaquettes, U, beta, Nx, Ny, threads, blocks)
-#     CUDA.@sync begin
-#         CUDA.@cuda threads=threads blocks=blocks U1plaquette!(plaquettes, U, Nx, Ny)
-#     end
-#     S = beta * ( Nx * Ny - reduce(+, plaquettes) )
-
-#     return S
-# end
-
-function action(U1ws::U1Quenched, lp::LattParm)
-    return gauge_action(U1ws, lp)
+function action(U1ws::U1Quenched)
+    return gauge_action(U1ws)
 end
 
-gauge_action(U1ws::U1, lp::U1Parm) = U1quenchedaction(U1ws, lp)
+gauge_action(U1ws::U1) = U1quenchedaction(U1ws)
 
-function U1quenchedaction(U1ws::U1, lp::LattParm)
+function U1quenchedaction(U1ws::U1)
+    lp = U1ws.params.lp
     return U1quenchedaction(U1ws.U, lp.beta, lp.iL[1], lp.iL[2], lp.device, lp.kprm.threads, lp.kprm.blocks)
 end
 
@@ -133,12 +101,12 @@ function U1quenchedaction(plaquettes, U, beta, Nx, Ny, device, threads, blocks)
     return S
 end
 
-action(U1ws::U1Nf2, lp::LattParm) = gauge_action(U1ws, lp) + pfaction(U1ws, lp)
+# action(U1ws::U1Nf2, lp::LattParm) = gauge_action(U1ws, lp) + pfaction(U1ws, lp)
 
-function pfaction(U1ws::U1Nf2, lp::U1Parm)
-    invert!(U1ws.sws, U1ws.X, gamm5Dw_sqr_msq!, U1ws.F, U1ws, lp)
-    return real(dot(U1ws.X, U1ws.F))
-end
+# function pfaction(U1ws::U1Nf2, lp::U1Parm)
+#     invert!(U1ws.sws, U1ws.X, gamm5Dw_sqr_msq!, U1ws.F, U1ws, lp)
+#     return real(dot(U1ws.X, U1ws.F))
+# end
 
 
 function top_charge(U1ws::U1, lp::LattParm)

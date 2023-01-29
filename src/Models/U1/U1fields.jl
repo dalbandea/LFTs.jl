@@ -9,19 +9,28 @@ Allocates all the necessary fields for a HMC simulation of a U(1) model:
 - `U`: ``U`` gauge field.
 - `frc`
 """
-struct U1quenchedworkspace{T} <: U1Quenched
+struct U1quenchedworkspace{T, N} <: U1Quenched
     PRC::Type{T}
-    U
-    frc1
-    frc2
-    mom
+    U::Array{complex(T), N}
+    params::U1Parm
     function U1quenchedworkspace(::Type{T}, lp::U1Parm) where {T <: AbstractFloat}
         U = to_device(lp.device, ones(complex(T), lp.iL..., 2))
-        frc1 = to_device(lp.device, zeros(T, lp.iL..., 2))
-        frc2 = similar(frc1)
-        mom = similar(frc1)
-        return new{T}(T, U, frc1, frc2, mom)
+        return new{T, 2}(T, U, lp)
     end
+end
+
+struct U1quenchedHMC{A <: AbstractArray} <: AbstractHMC
+    params::HMC
+    frc1::A
+    frc2::A
+    mom::A
+end
+
+function U1quenchedHMC(u1ws::U1Quenched, hmcp::HMCParams)
+    frc1 = to_device(u1ws.params.lp.device, zeros(u1ws.PRC, lp.iL..., 2))
+    frc2 = similar(frc1)
+    mom = similar(frc1)
+    return U1quenched(T, U, frc1, frc2, mom)
 end
 
 struct U1Nf2workspace{T} <: U1Nf2
