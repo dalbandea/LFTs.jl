@@ -87,7 +87,9 @@ mutable struct Phi4AverageOnPoint <: AbstractScalar
 end
 export Phi4AverageOnPoint
 
-function average_on_point(phiws::Phi4, i::Int64, j::Int64, lp::Phi4Parm)
+function average_on_point(phiws::Phi4, i::Int64, j::Int64)
+    lp = phiws.params.lp
+
     iu = mod1(i+1, lp.iL[1])
     id = mod1(i-1, lp.iL[1])
     ju = mod1(i+1, lp.iL[2])
@@ -100,8 +102,8 @@ function average_on_point(phiws::Phi4, i::Int64, j::Int64, lp::Phi4Parm)
     return avg-val
 end
 
-function (obs::Phi4AverageOnPoint)(phiws::Phi4, lp::Phi4Parm)
-    obs.result = average_on_point(phiws, 1, 1, lp)
+function (obs::Phi4AverageOnPoint)(phiws::Phi4)
+    obs.result = average_on_point(phiws, 1, 1)
     return nothing
 end
 
@@ -112,6 +114,5 @@ function analyze(obs::Phi4AverageOnPoint; wdir::String = "./results/trash/")
     Plots.savefig(pl, joinpath(wdir, filename))
     return nothing
 end
-
 
 

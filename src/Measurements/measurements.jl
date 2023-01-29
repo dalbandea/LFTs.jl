@@ -65,8 +65,6 @@ end
 
 function sample_and_measure!(observables::Array{T}, lftws::AbstractLFT, sampler::AbstractSampler; verbose::Bool = false, get_history::Bool = false) where T <: AbstractObservable
 
-    sampler = initialize_sampler(sampler, lftws)
-
     if sampler.thermalized == false
         for i in 1:sampler.ntherm
             verbose && print("Thermalizing... $(i)\r") 

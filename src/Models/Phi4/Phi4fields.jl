@@ -29,15 +29,16 @@ function (::Type{Phi4})(::Type{T} = Float64; kwargs...) where {T <: AbstractFloa
     return Phi4workspace(T, Phi4Parm(;kwargs...))
 end
 
-struct Phi4HMC <: AbstractHMC
+struct Phi4HMC{A <: AbstractArray} <: AbstractHMC
     params::HMCParams
-    frc
-    mom
-    function Phi4HMC(phiws::Phi4, hmcp::HMCParams)
-        frc = similar(phiws.phi)
-        mom = similar(phiws.phi)
-        return new(hmcp, frc, mom)
-    end
+    frc::A
+    mom::A
+end
+
+function Phi4HMC(phiws::Phi4, hmcp::HMCParams)
+    frc = similar(phiws.phi)
+    mom = similar(phiws.phi)
+    return Phi4HMC{typeof(frc)}(hmcp, frc, mom)
 end
 
 sampler(lftws::Phi4, hmcp::HMCParams) = Phi4HMC(lftws, hmcp)
