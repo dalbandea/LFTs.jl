@@ -88,7 +88,7 @@ end
 export Phi4AverageOnPoint
 
 function average_on_point(phiws::Phi4, i::Int64, j::Int64)
-    lp = phiws.params.lp
+    lp = phiws.params
 
     iu = mod1(i+1, lp.iL[1])
     id = mod1(i-1, lp.iL[1])

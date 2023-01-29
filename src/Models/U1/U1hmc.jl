@@ -1,7 +1,7 @@
 
 function generate_momenta!(U1ws::U1, hmcws::AbstractHMC)
     # Create momenta for U1
-    hmcws.mom .= to_device(U1ws.params.device, randn(U1ws.PRC, size(hmcws.mom)))
+    hmcws.mom .= to_device(U1ws.device, randn(U1ws.PRC, size(hmcws.mom)))
     return nothing
 end
 
@@ -44,9 +44,9 @@ end
 # end
 
 
-function update_fields!(U1ws::U1, hmcws::AbstractHMC)
-    lp = U1ws.params.lp
-    event = U1_update_field!(lp.device)(U1ws.U, hmcws.mom, epsilon, ndrange=(lp.iL[1], lp.iL[2]), workgroupsize=lp.kprm.threads)
+function update_fields!(U1ws::T, epsilon, hmcws::AbstractHMC) where T <: U1
+    lp = U1ws.params
+    event = U1_update_field!(U1ws.device)(U1ws.U, hmcws.mom, epsilon, ndrange=(lp.iL[1], lp.iL[2]), workgroupsize=U1ws.kprm.threads)
     wait(event)
     return nothing
 end

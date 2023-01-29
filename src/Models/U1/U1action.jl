@@ -56,8 +56,8 @@ function force!(U1ws::U1Quenched, hmcws::AbstractHMC)
 end
 
 function gauge_force!(U1ws::U1, hmcws::AbstractHMC)
-    lp = U1ws.params.lp
-    event = U1quenchedforce!(lp.device)(hmcws.frc1, hmcws.frc2, U1ws.U, lp.beta, lp.iL[1], lp.iL[2], ndrange=(lp.iL[1], lp.iL[2]), workgroupsize=lp.kprm.threads)
+    lp = U1ws.params
+    event = U1quenchedforce!(U1ws.device)(hmcws.frc1, hmcws.frc2, U1ws.U, lp.beta, lp.iL[1], lp.iL[2], ndrange=(lp.iL[1], lp.iL[2]), workgroupsize=U1ws.kprm.threads)
     wait(event)
     return nothing
 end
@@ -84,8 +84,8 @@ end
 gauge_action(U1ws::U1) = U1quenchedaction(U1ws)
 
 function U1quenchedaction(U1ws::U1)
-    lp = U1ws.params.lp
-    return U1quenchedaction(U1ws.U, lp.beta, lp.iL[1], lp.iL[2], lp.device, lp.kprm.threads, lp.kprm.blocks)
+    lp = U1ws.params
+    return U1quenchedaction(U1ws.U, lp.beta, lp.iL[1], lp.iL[2], U1ws.device, U1ws.kprm.threads, U1ws.kprm.blocks)
 end
 
 function U1quenchedaction(U, beta, Nx, Ny, device, threads, blocks)

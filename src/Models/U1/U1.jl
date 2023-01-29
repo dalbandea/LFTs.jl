@@ -3,24 +3,24 @@ using KernelAbstractions
 import CUDA, CUDAKernels
 import AMDGPU, ROCKernels
 
-abstract type U1 <: LFTworkspace end
+abstract type U1 <: AbstractLFT end
 abstract type U1Quenched <: U1 end
 abstract type U1Nf2 <: U1 end
 
+
+Base.@kwdef struct U1Parm <: LFTParm
+    iL::Tuple{Int64,Int64}
+    beta::Float64
+end
+export U1Parm
 
 struct KernelParm
     threads::Tuple{Int64,Int64}
     blocks::Tuple{Int64,Int64}
 end
-export KernelParm
 
-struct U1Parm <: LattParm
-    iL::Tuple{Int64,Int64}
-    beta::Float64
-    device::Union{KernelAbstractions.Device, ROCKernels.ROCDevice}
-    kprm::KernelParm
-end
-export U1Parm
+KernelParm(lp::U1Parm) = KernelParm((lp.iL[1], 1), (1, lp.iL[1]))
+export KernelParm
 
 
 include("U1fields.jl")
