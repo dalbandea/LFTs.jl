@@ -91,3 +91,8 @@ function copy!(U1ws_dst::U1, U1ws_src::U1, lp::U1Parm)
     U1ws_dst.U .= U1ws_src.U
     return nothing
 end
+
+function randomize!(U1ws::U1)
+    U1ws.U .= to_device(U1ws.device, exp.(im * Random.rand(U1ws.PRC, size(U1ws.U)) * 2 * pi))
+    return nothing
+end
