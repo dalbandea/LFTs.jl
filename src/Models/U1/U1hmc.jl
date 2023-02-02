@@ -5,6 +5,11 @@ function generate_momenta!(U1ws::U1, hmcws::AbstractHMC)
     return nothing
 end
 
+function flip_momenta_sign!(hmcws::U1Nf2HMC)
+    hmcws.mom .= .- hmcws.mom
+    return nothing
+end
+
 function Hamiltonian(U1ws::U1, hmcws::AbstractHMC)
     H = CUDA.mapreduce(x -> x^2, +, hmcws.mom)/2.0 + action(U1ws, hmcws)
     return H
@@ -26,7 +31,6 @@ function generate_pseudofermions!(U1ws::U1Nf2, hmcws::AbstractHMC)
 end
 
 function update_momenta!(U1ws::U1Nf2, epsilon, hmcws::AbstractHMC)
-
 	# Solve DX = F for X
     iter = invert!(hmcws.X, gamm5Dw_sqr_msq!, hmcws.F, U1ws.sws, U1ws)
 
