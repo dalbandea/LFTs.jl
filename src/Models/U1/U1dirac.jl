@@ -29,20 +29,21 @@ KernelAbstractions.@kernel function U1gamm5Dw!(so, U, si, am0, Nx, Ny)
     
 end
 
-function gamm5Dw!(so, si, U1ws::U1Nf2, lp::U1Parm)
-    event = U1gamm5Dw!(lp.device)(so, U1ws.U, si, U1ws.am0, lp.iL[1],
+function gamm5Dw!(so, si, U1ws::U1Nf2)
+    lp = U1ws.params
+    event = U1gamm5Dw!(U1ws.device)(so, U1ws.U, si, lp.am0, lp.iL[1],
                                   lp.iL[2], ndrange=(lp.iL[1], lp.iL[2]),
-                                  workgroupsize=lp.kprm.threads)
+                                  workgroupsize=U1ws.kprm.threads)
     wait(event)
     return nothing
 end
 
 
-function gamm5Dw_sqr_msq!(so, tmp, si, U1ws::U1Nf2, lp::U1Parm)
+function gamm5Dw_sqr_msq!(so, tmp, si, U1ws::U1Nf2)
 
-    gamm5Dw!(so, si, U1ws, lp)
+    gamm5Dw!(so, si, U1ws)
     tmp .= so
-    gamm5Dw!(so, tmp, U1ws, lp)
+    gamm5Dw!(so, tmp, U1ws)
     # so .= so .+ (am0^2)
     
     return nothing
@@ -172,11 +173,12 @@ end
 # end
 
 
-function pf_force!(U1ws::U1Nf2, lp::U1Parm)
-    event = U1_tr_dQwdU!(lp.device)(U1ws.pfrc, U1ws.U, U1ws.X, U1ws.g5DX,
+function pf_force!(U1ws::U1Nf2, hmcws::AbstractHMC)
+    lp = U1ws.params
+    event = U1_tr_dQwdU!(U1ws.device)(hmcws.pfrc, U1ws.U, hmcws.X, hmcws.g5DX,
                                     lp.iL[1], lp.iL[2], 
                                     ndrange=(lp.iL[1], lp.iL[2]),
-                                    workgroupsize=lp.kprm.threads)
+                                    workgroupsize=U1ws.kprm.threads)
     wait(event)
     return nothing
 end

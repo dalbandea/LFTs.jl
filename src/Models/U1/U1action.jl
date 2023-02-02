@@ -77,7 +77,7 @@ KernelAbstractions.@kernel function U1quenchedforce!(frc1, frc2, U, beta, Nx, Ny
     frc2[i1,iu2,1] =  v 
 end
 
-function action(U1ws::U1Quenched)
+function action(U1ws::U1Quenched, hmcws::AbstractHMC)
     return gauge_action(U1ws)
 end
 
@@ -101,12 +101,12 @@ function U1quenchedaction(plaquettes, U, beta, Nx, Ny, device, threads, blocks)
     return S
 end
 
-# action(U1ws::U1Nf2, lp::LattParm) = gauge_action(U1ws, lp) + pfaction(U1ws, lp)
+action(U1ws::U1Nf2, hmcws::AbstractHMC) = gauge_action(U1ws) + pfaction(U1ws, hmcws)
 
-# function pfaction(U1ws::U1Nf2, lp::U1Parm)
-#     invert!(U1ws.sws, U1ws.X, gamm5Dw_sqr_msq!, U1ws.F, U1ws, lp)
-#     return real(dot(U1ws.X, U1ws.F))
-# end
+function pfaction(U1ws::U1Nf2, hmcws::AbstractHMC)
+    invert!(hmcws.X, gamm5Dw_sqr_msq!, hmcws.F, U1ws.sws, U1ws)
+    return real(dot(hmcws.X, hmcws.F))
+end
 
 
 function top_charge(U1ws::U1, lp::LattParm)
