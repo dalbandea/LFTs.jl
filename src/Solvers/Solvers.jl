@@ -1,23 +1,23 @@
 abstract type AbstractSolver end
 
-struct CG <: AbstractSolver
-    maxiter
-    tol
-    r
-    p
-    Ap
-    tmp
+struct CG{A <: AbstractArray} <: AbstractSolver
+    maxiter::Int64
+    tol::Float64
+    r::A
+    p::A
+    Ap::A
+    tmp::A
     function CG(maxiter, tol, X)
         r = similar(X)
         p = similar(X)
         Ap = similar(X)
         tmp = similar(X)
-        return new(maxiter, tol, r, p, Ap, tmp)
+        return new{typeof(X)}(maxiter, tol, r, p, Ap, tmp)
     end
 end
 
 
-invert!(solver::CG, so, A::Function, si, lftws::AbstractLFT) = cg!(so, A, si, solver, lftws)
+invert!(so, A::Function, si, solver::CG, lftws::AbstractLFT) = cg!(so, A, si, solver, lftws)
 
 
 function cg!(so, A::Function, si, solver::CG, lftws::AbstractLFT)
