@@ -2,7 +2,8 @@
 ## Mandatory
 function generate_momenta!(lftws::AbstractLFT, hmcws::AbstractHMC) end
 function Hamiltonian(lftws::AbstractLFT, hmcws::AbstractHMC) end
-function action(lftws::AbstractLFT, hmcws::AbstractHMC) end
+function action(lftws::AbstractLFT) end
+action(lftws::AbstractLFT, hmcws::AbstractHMC) = action(lftws)
 function copy!(lftws_dest::AbstractLFT, lftws_src::AbstractLFT, hmcws::AbstractHMC) end
 function update_momenta!(lftws::AbstractLFT, epsilon, hmcws::AbstractHMC) end
 function update_fields!(lftws::AbstractLFT, epsilon, hmcws::AbstractHMC) end
