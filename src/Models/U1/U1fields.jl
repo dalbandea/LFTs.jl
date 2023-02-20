@@ -63,8 +63,9 @@ end
 
 # - `phiws.phi` from Gaussian.
 # """
-# function randomize!(phiws::Phi4, lp::Phi4Parm)
-#     phiws.phi .= Random.randn(phiws.PRC, size(phiws.phi)...)
-#     return nothing
-# end
+
+function randomize!(U1ws::U1, lp::U1Parm)
+    U1ws.U .= exp.(im*(2pi*Random.rand(U1ws.PRC, size(U1ws.U)...) .- pi))
+    return nothing
+end
 
