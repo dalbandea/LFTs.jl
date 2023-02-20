@@ -63,7 +63,7 @@ end
 
 KernelAbstractions.@kernel function U1_update_field!(U, mom, epsilon)
 
-    i1, i2 = KernelAbstractions.@index(Global, NTuple)
+    i1, i2 = @index(Global, NTuple)
 
     for id in 1:2
         U[i1,i2,id] = complex(cos(epsilon*mom[i1,i2,id]), sin(epsilon*mom[i1,i2,id])) * U[i1,i2,id]

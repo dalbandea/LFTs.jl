@@ -17,7 +17,7 @@
 
 KernelAbstractions.@kernel function U1plaquette!(plx, U, Nx, Ny)
 
-    i1, i2 = KernelAbstractions.@index(Global, NTuple)
+    i1, i2 = @index(Global, NTuple)
 
     iu1 = mod(i1, Nx) + 1
     iu2 = mod(i2, Ny) + 1
@@ -82,7 +82,7 @@ end
 
 KernelAbstractions.@kernel function U1quenchedforce!(frc1, frc2, U, beta, Nx, Ny)
     
-    i1, i2 = KernelAbstractions.@index(Global, NTuple)
+    i1, i2 = @index(Global, NTuple)
 
     iu1 = mod(i1, Nx) + 1
     iu2 = mod(i2, Ny) + 1

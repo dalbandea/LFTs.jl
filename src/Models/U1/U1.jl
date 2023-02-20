@@ -1,5 +1,5 @@
 
-import KernelAbstractions
+using KernelAbstractions
 import CUDA, CUDAKernels
 import AMDGPU, ROCKernels
 
@@ -46,7 +46,6 @@ to_device(::KernelAbstractions.CPU, x) = x
 
 allowscalar(::KernelAbstractions.CPU) = nothing
 disallowscalar(::KernelAbstractions.CPU) = nothing
-disallowscalar(::CUDAKernels.CUDADevice) = CUDA.allowscalar(false)
 allowscalar(::CUDAKernels.CUDADevice) = CUDA.allowscalar(true)
 disallowscalar(::CUDAKernels.CUDADevice) = CUDA.allowscalar(false)
 allowscalar(::ROCKernels.ROCDevice) = AMDGPU.allowscalar(true)

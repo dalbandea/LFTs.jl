@@ -2,7 +2,7 @@
 # Returns so = γ₅D si in-place.
 KernelAbstractions.@kernel function U1gamm5Dw!(so, U, si, am0, Nx, Ny)
 
-    i1, i2 = KernelAbstractions.@index(Global, NTuple)
+    i1, i2 = @index(Global, NTuple)
 
     iu1 = mod(i1, Nx) + 1
     iu2 = mod(i2, Ny) + 1
@@ -184,7 +184,7 @@ end
 
 KernelAbstractions.@kernel function U1_tr_dQwdU!(frc, U, X, g5DwX, Nx, Ny)
 
-    i1, i2 = KernelAbstractions.@index(Global, NTuple)
+    i1, i2 = @index(Global, NTuple)
 
     iu1 = mod(i1, Nx) + 1
     iu2 = mod(i2, Ny) + 1
