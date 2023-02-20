@@ -41,7 +41,16 @@ include("U1analysis.jl")
 
 to_device(::CUDAKernels.CUDADevice, x) = CUDA.CuArray(x)
 to_device(::ROCKernels.ROCDevice, x) = AMDGPU.ROCArray(x)
+to_device(::KernelAbstractions.CPU, x) = x
 
+
+allowscalar(::KernelAbstractions.CPU) = nothing
+disallowscalar(::KernelAbstractions.CPU) = nothing
+disallowscalar(::CUDAKernels.CUDADevice) = CUDA.allowscalar(false)
+allowscalar(::CUDAKernels.CUDADevice) = CUDA.allowscalar(true)
+disallowscalar(::CUDAKernels.CUDADevice) = CUDA.allowscalar(false)
+allowscalar(::ROCKernels.ROCDevice) = AMDGPU.allowscalar(true)
+disallowscalar(::ROCKernels.ROCDevice) = AMDGPU.allowscalar(false)
 
 # Glossary of variable name meanings
 

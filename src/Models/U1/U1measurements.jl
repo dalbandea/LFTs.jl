@@ -37,7 +37,9 @@ function invert_sources!(corrws::AbstractU1Correlator, U1ws::U1Nf2, lp::U1Parm)
 
     # Source 1
     S0 .= zero(eltype(S0))
-    CUDA.@allowscalar S0[1,1,1] = one(eltype(S0))
+    allowscalar(lp.device)
+    S0[1,1,1] = one(eltype(S0))
+    disallowscalar(lp.device)
     S = similar(S0)
 
     ## Solve g5D S = S0 for S
@@ -46,7 +48,9 @@ function invert_sources!(corrws::AbstractU1Correlator, U1ws::U1Nf2, lp::U1Parm)
 
     # Source 2
     S0 .= zero(eltype(S0))
+    allowscalar(lp.device)
     CUDA.@allowscalar S0[1,1,2] = one(eltype(S0))
+    disallowscalar(lp.device)
 
 	iter = invert!(U1ws.sws, S, gamm5Dw_sqr_msq!, S0, U1ws, lp)
     gamm5Dw!(R2, S, U1ws, lp)
@@ -70,15 +74,16 @@ function pion_correlator_function(corrws::AbstractU1Correlator, t, lp::U1Parm)
     # NOTE: this should be ultraslow. It may be better to put R1 and R2 into the
     # CPU prior to calling this function. For GPU, the best one can do is to
     # reduce columns of the GPU array.
+    allowscalar(lp.device)
     for x in 1:lp.iL[1]
-        CUDA.@allowscalar begin 
-            a = corrws.R1[x,t,1]
-            b = corrws.R1[x,t,2]
-            c = corrws.R2[x,t,1]
-            d = corrws.R2[x,t,2]
-        end
+        a = corrws.R1[x,t,1]
+        b = corrws.R1[x,t,2]
+        c = corrws.R2[x,t,1]
+        d = corrws.R2[x,t,2]
+
         Ct += abs(dot(a,a) + dot(b,b) + dot(c,c) + dot(d,d))
     end
+    disallowscalar(lp.device)
 
     return Ct
 end
@@ -131,15 +136,16 @@ function pcac_correlation_function(corrws::AbstractU1Correlator, t, lp::U1Parm)
     c = zero(ComplexF64)
     d = zero(ComplexF64)
 
+    allowscalar(lp.device)
     for x in 1:lp.iL[1]
-        CUDA.@allowscalar begin 
-            a = corrws.R1[x,t,1]
-            b = corrws.R1[x,t,2]
-            c = corrws.R2[x,t,1]
-            d = corrws.R2[x,t,2]
-        end
+        a = corrws.R1[x,t,1]
+        b = corrws.R1[x,t,2]
+        c = corrws.R2[x,t,1]
+        d = corrws.R2[x,t,2]
+
         Ct += -imag(a*conj(c)) - imag(b*conj(d))
     end
+    disallowscalar(lp.device)
     Ct *= 2
 
     # NOTE: another test would be to check if there is imaginary part of Ct

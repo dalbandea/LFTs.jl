@@ -10,7 +10,7 @@ function Hamiltonian(U1ws::U1, lp::U1Parm)
 end
 
 function Hamiltonian(mom, U1ws::U1, lp::U1Parm)
-    H = CUDA.mapreduce(x -> x^2, +, mom)/2.0 + action(U1ws, lp)
+    H = mapreduce(x -> x^2, +, mom)/2.0 + action(U1ws, lp)
     return H
 end
 
