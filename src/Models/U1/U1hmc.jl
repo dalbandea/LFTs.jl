@@ -22,7 +22,7 @@ end
 
 function update_momenta!(U1ws::U1Quenched, epsilon, hmcws::AbstractHMC)
     force!(U1ws, hmcws)
-    hmcws.mom .= hmcws.mom .+ epsilon * (hmcws.frc1 .+ hmcws.frc2)
+    hmcws.mom .= hmcws.mom .+ epsilon .* (hmcws.frc1 .+ hmcws.frc2)
     return nothing
 end
 

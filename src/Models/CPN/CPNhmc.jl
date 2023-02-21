@@ -73,7 +73,7 @@ end
 
 function update_fields!(x, phi, mom_x, mom_phi, x_cp, epsilon, cpws::CPworkspace, lp::CPNParm) 
     # Update phi field
-    phi .= phi .+ epsilon * mom_phi
+    phi .= phi .+ epsilon .* mom_phi
 
     # Update x field
     update_x!(x, mom_x, x_cp, epsilon, cpws, lp)
@@ -87,8 +87,8 @@ function update_x!(x, mom_x, x_cp, epsilon, cpws::CPworkspace, lp::CPNParm)
         for i in 1:lp.iL[2]
             @views abspi = sqrt(sum(abs2, mom_x[:,i,j]))
             alpha = epsilon * abspi
-            @views x[:,i,j] .= cos(alpha) * x_cp[:,i,j] .+ sin(alpha) * mom_x[:,i,j] / abspi
-            @views mom_x[:,i,j] .= - abspi * sin(alpha) * x_cp[:,i,j] .+ cos(alpha) *
+            @views x[:,i,j] .= cos(alpha) .* x_cp[:,i,j] .+ sin(alpha) .* mom_x[:,i,j] ./ abspi
+            @views mom_x[:,i,j] .= - abspi * sin(alpha) .* x_cp[:,i,j] .+ cos(alpha) .*
                             mom_x[:,i,j]
         end
     end

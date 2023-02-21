@@ -22,6 +22,6 @@ end
 
 function update_fields!(phiws::Phi4, epsilon, hmcws::Phi4HMC)
     # Update phi field
-    phiws.phi .= phiws.phi .+ epsilon * hmcws.mom
+    phiws.phi .= phiws.phi .+ epsilon .* hmcws.mom
     return nothing
 end
