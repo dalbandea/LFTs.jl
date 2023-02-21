@@ -25,4 +25,5 @@ end
 include("quantumrotorfields.jl")
 include("quantumrotoraction.jl")
 include("quantumrotorhmc.jl")
+include("quantumrotormetropolis.jl")
 include("quantumrotormeasurements.jl")

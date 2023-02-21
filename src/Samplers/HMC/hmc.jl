@@ -13,10 +13,6 @@ function action(lftws::AbstractLFT)
     return nothing
 end
 action(lftws::AbstractLFT, hmcws::AbstractHMC) = action(lftws)
-function copy!(lftws_dest::AbstractLFT, lftws_src::AbstractLFT, hmcws::AbstractHMC)
-    error("No function copy! for $(typeof(lftws_dest))")
-    return nothing
-end
 function update_momenta!(lftws::AbstractLFT, epsilon, hmcws::AbstractHMC) 
     error("No function update_momenta! for $(typeof(lftws))")
     return nothing
@@ -56,18 +52,9 @@ function hmc!(lftws::AbstractLFT, hmcws::AbstractHMC)
     hfin = Hamiltonian(lftws, hmcws)
 
     dH = hfin - hini
-    pacc = exp(-dH)
-    if (pacc < 1.0)
-        r = rand()
-        if (r > pacc) 
-            copy!(lftws, ws_cp, hmcws)
-            @info("    REJECT: Energy [inital: $hini; final: $hfin; difference: $(hfin-hini)]")
-        else
-            @info("    ACCEPT:  Energy [inital: $hini; final: $hfin; difference: $(hfin-hini)]")
-        end
-    else
-        @info("    ACCEPT:  Energy [inital: $hini; final: $hfin; difference: $(hfin-hini)]")
-    end
+
+    # Accept-reject step
+    metropolis_accept_reject!(lftws, ws_cp, hmcws, dH)
 
     return dH
 end

@@ -22,21 +22,21 @@ struct QuantumRotorHMC{A <: AbstractArray} <: AbstractHMC
     mom::A
 end
 
-function QuantumRotorHMC(phiws::QuantumRotor, hmcp::HMCParams)
-    frc = similar(phiws.phi)
-    mom = similar(phiws.phi)
+function QuantumRotorHMC(qrws::QuantumRotor, hmcp::HMCParams)
+    frc = similar(qrws.phi)
+    mom = similar(qrws.phi)
     return QuantumRotorHMC{typeof(frc)}(hmcp, frc, mom)
 end
 
 sampler(lftws::QuantumRotor, hmcp::HMCParams) = QuantumRotorHMC(lftws, hmcp)
 
-function copy!(phiws_dst::QuantumRotor, phiws_src::QuantumRotor, hmcws::QuantumRotorHMC)
-    phiws_dst.phi .= phiws_src.phi
+function copy!(qrws_dst::QuantumRotor, qrws_src::QuantumRotor)
+    qrws_dst.phi .= qrws_src.phi
     return nothing
 end
 
-function randomize!(phiws::QuantumRotor)
-    phiws.phi .= 2pi*Random.rand(phiws.PRC, size(phiws.phi)...) .- pi
+function randomize!(qrws::QuantumRotor)
+    qrws.phi .= 2pi*Random.rand(qrws.PRC, size(qrws.phi)...) .- pi
     return nothing
 end
 
