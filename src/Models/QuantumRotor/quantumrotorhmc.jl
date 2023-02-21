@@ -1,4 +1,20 @@
 
+# function sample!(qrws::QuantumRotor, samplerws::AbstractHMC; do_winding = false) 
+#     hmc!(qrws, samplerws)
+#     if do_winding == true
+#         if rand() > 0.5
+#             winding!(qrws)
+#             acceptreject!
+#         else
+#             antiwinding!(qrws)
+#         end
+#     end
+# end
+
+# function winding_step!(qrws::QuantumRotor)
+#     r = rand()
+# end
+
 function generate_momenta!(qrws::QuantumRotor, hmcws::QuantumRotorHMC)
     for i in 1:length(hmcws.mom)
         hmcws.mom[i] = randn()

@@ -55,6 +55,7 @@ function save!(obs::AbstractCorrelator)
     push!(obs.history, obs.result)
     return nothing
 end
+export save!
 
 function read(::Type{T}, filepath::String) where T <: AbstractCorrelator
     return DelimitedFiles.readdlm(filepath, ',', Float64)
