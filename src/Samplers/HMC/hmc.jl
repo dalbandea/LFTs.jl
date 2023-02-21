@@ -14,7 +14,7 @@ function action(lftws::AbstractLFT)
 end
 action(lftws::AbstractLFT, hmcws::AbstractHMC) = action(lftws)
 function copy!(lftws_dest::AbstractLFT, lftws_src::AbstractLFT, hmcws::AbstractHMC)
-    error("No function copy! for $(typeof(lftws))")
+    error("No function copy! for $(typeof(lftws_dest))")
     return nothing
 end
 function update_momenta!(lftws::AbstractLFT, epsilon, hmcws::AbstractHMC) 
