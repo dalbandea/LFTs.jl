@@ -1,12 +1,30 @@
 # These functions need to be defined for every model (subtype of AbstractLFT)
 ## Mandatory
-function generate_momenta!(lftws::AbstractLFT, hmcws::AbstractHMC) end
-function Hamiltonian(lftws::AbstractLFT, hmcws::AbstractHMC) end
-function action(lftws::AbstractLFT) end
+function generate_momenta!(lftws::AbstractLFT, hmcws::AbstractHMC) 
+    error("No function generate_momenta! for $(typeof(lftws))")
+    return nothing
+end
+function Hamiltonian(lftws::AbstractLFT, hmcws::AbstractHMC) 
+    error("No function Hamiltonian for $(typeof(lftws))")
+    return nothing
+end
+function action(lftws::AbstractLFT) 
+    error("No function action for $(typeof(lftws))")
+    return nothing
+end
 action(lftws::AbstractLFT, hmcws::AbstractHMC) = action(lftws)
-function copy!(lftws_dest::AbstractLFT, lftws_src::AbstractLFT, hmcws::AbstractHMC) end
-function update_momenta!(lftws::AbstractLFT, epsilon, hmcws::AbstractHMC) end
-function update_fields!(lftws::AbstractLFT, epsilon, hmcws::AbstractHMC) end
+function copy!(lftws_dest::AbstractLFT, lftws_src::AbstractLFT, hmcws::AbstractHMC)
+    error("No function copy! for $(typeof(lftws))")
+    return nothing
+end
+function update_momenta!(lftws::AbstractLFT, epsilon, hmcws::AbstractHMC) 
+    error("No function update_momenta! for $(typeof(lftws))")
+    return nothing
+end
+function update_fields!(lftws::AbstractLFT, epsilon, hmcws::AbstractHMC) 
+    error("No function update_fields! for $(typeof(lftws))")
+    return nothing
+end
 
 ## Optional
 function generate_pseudofermions!(lftws::AbstractLFT, hmcws::AbstractHMC) end
