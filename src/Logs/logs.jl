@@ -19,6 +19,7 @@ function reproducibility_log(wdir::String = joinpath("./results/trash/", string(
     write(io_stat, "\n")
     write(io_stat, "Recover with `copy!(Random.default_rng(), state)`")
     close(io_stat)
+    cp(PROGRAM_FILE, wdir)
 
     # Create patch with non-staged changed (from tracked files)
     write(joinpath(logdir, "gitpatch.patch"), readchomp(`$git diff`))
