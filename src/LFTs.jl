@@ -1,7 +1,7 @@
 module LFTs
 
 import Base: read, write, sign
-import Random, FFTW, InteractiveUtils, Dates, DelimitedFiles, Plots
+import Random, FFTW, InteractiveUtils, Dates, DelimitedFiles, Plots, Git
 using LinearAlgebra
 
 # using ADerrors
