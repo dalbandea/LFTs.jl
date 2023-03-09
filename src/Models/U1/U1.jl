@@ -45,7 +45,6 @@ include("U1dirac.jl")
 export U1gamm5Dw!, gamm5Dw!, gamm5Dw_sqr_msq!
 
 include("U1measurements.jl")
-# include("U1analysis.jl")
 
 to_device(::CUDAKernels.CUDADevice, x) = CUDA.CuArray(x)
 to_device(::ROCKernels.ROCDevice, x) = AMDGPU.ROCArray(x)
