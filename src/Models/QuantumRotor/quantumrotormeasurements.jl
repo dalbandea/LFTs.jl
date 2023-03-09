@@ -15,6 +15,7 @@ mutable struct QRTopologicalCharge <: AbstractScalar
                               mesdir::String = "measurements/", 
                               extension::String = ".txt")
         filepath = joinpath(wdir, mesdir, ID*extension)
+        mkpath(joinpath(wdir,mesdir))
         result = zero(Float64)
         history = Vector{Float64}()
         return new(name, ID, filepath, result, history)
