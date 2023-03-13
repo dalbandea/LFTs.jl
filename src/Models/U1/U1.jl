@@ -27,7 +27,7 @@ include("U1fields.jl")
 export U1quenchedworkspace, U1Nf2workspace
 
 include("U1action.jl")
-export action, U1plaquette!, U1action, gauge_action
+export action, U1plaquette!, U1action, gauge_action, top_charge
 
 include("U1hmc.jl")
 # include("Phi4checks.jl")

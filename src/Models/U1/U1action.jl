@@ -29,21 +29,18 @@ KernelAbstractions.@kernel function U1plaquette!(plx, U, Nx, Ny)
     
 end
 
-# function qtop!(plx, U, prm::LattParm)
+KernelAbstractions.@kernel function U1qtop!(plx, U, Nx, Ny)
 
-#     i1 = (CUDA.blockIdx().x - 1) * CUDA.blockDim().x + CUDA.threadIdx().x
-#     i2 = (CUDA.blockIdx().y - 1) * CUDA.blockDim().y + CUDA.threadIdx().y
+    i1, i2 = @index(Global, NTuple)
 
-#     iu1 = mod(i1, prm.iL[1]) + 1
-#     iu2 = mod(i2, prm.iL[2]) + 1
+    iu1 = mod(i1, Nx) + 1
+    iu2 = mod(i2, Ny) + 1
     
-#     plx[i1,i2] = CUDA.angle(U[i1,i2,1] *
-#                             U[iu1,i2,2] *
-#                             conj(U[i1,iu2,1] *
-#                                  U[i1,i2,2]))
-    
-#     return nothing
-# end
+    plx[i1,i2] = angle(U[i1,i2,1] *
+                            U[iu1,i2,2] *
+                            conj(U[i1,iu2,1] *
+                                 U[i1,i2,2]))
+end
 
 # function force!(U1ws::U1, lp::LattParm)
 #     CUDA.@sync begin
@@ -144,4 +141,18 @@ function pfaction(U1ws::U1Nf2, lp::U1Parm)
 end
 
 
+function top_charge(U1ws::U1, lp::LattParm)
+    return U1topcharge(U1ws.U, lp.beta, lp.iL[1], lp.iL[2], lp.device, lp.kprm.threads, lp.kprm.blocks)
+end
 
+function U1topcharge(U, beta, Nx, Ny, device, threads, blocks)
+    plaquettes = to_device(device, zeros(Float64, Nx, Ny))
+    return U1topcharge(plaquettes, U, beta, Nx, Ny, device, threads, blocks)
+end
+
+function U1topcharge(plaquettes, U, beta, Nx, Ny, device, threads, blocks)
+    event = U1qtop!(device)(plaquettes, U, Nx, Ny, ndrange=(Nx, Ny), workgroupsize=threads)
+    wait(event)
+    Q = reduce(+, plaquettes) / (2.0*pi)
+    return Q
+end
