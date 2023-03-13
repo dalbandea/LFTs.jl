@@ -66,3 +66,22 @@ function antiwinding!(qrws::QuantumRotor)
         qrws.phi[i] = qrws.phi[i] - (i-1) * 2pi/qrws.params.iT
     end
 end
+
+
+function unwind!(qrws::QuantumRotor)
+    i = 0.0
+    while LFTs.top_charge(qrws) |> round != 0.0
+        Q = LFTs.top_charge(qrws)
+        if Q < 0
+            LFTs.winding!(qrws)
+        elseif Q > 0
+            LFTs.antiwinding!(qrws)
+        end
+        if i == 10000
+            println("Stopped unwinding after $i iterations")
+            break
+        end
+        i+=1
+    end
+    return nothing
+end
