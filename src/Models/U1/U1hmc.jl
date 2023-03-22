@@ -5,6 +5,11 @@ function generate_momenta!(U1ws::U1, hmcws::AbstractHMC)
     return nothing
 end
 
+function flip_momenta_sign!(hmcws::U1quenchedHMC)
+    hmcws.mom .= .- hmcws.mom
+    return nothing
+end
+
 function flip_momenta_sign!(hmcws::U1Nf2HMC)
     hmcws.mom .= .- hmcws.mom
     return nothing
