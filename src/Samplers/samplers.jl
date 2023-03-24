@@ -55,7 +55,8 @@ Base.@kwdef mutable struct HMC <: HMCParams
 end
 export HMC
 
-Base.@kwdef mutable struct RHMC <: HMCParams
+Base.@kwdef mutable struct RHMC{I <: AbstractIntegrator} <: HMCParams
+    integrator::I = Leapfrog()
 	r_b::Float64
 	n::Int64
 	eps::Float64
