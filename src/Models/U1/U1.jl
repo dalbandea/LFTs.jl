@@ -6,6 +6,7 @@ import AMDGPU, ROCKernels
 abstract type U1 <: AbstractLFT end
 abstract type U1Quenched <: U1 end
 abstract type U1Nf2 <: U1 end
+abstract type U1Nf <: U1 end
 
 abstract type U1Parm <: LFTParm end
 
@@ -21,6 +22,13 @@ Base.@kwdef struct U1Nf2Parm <: U1Parm
     am0::Float64
 end
 export U1Nf2Parm
+
+Base.@kwdef struct U1NfParm{A <: AbstractArray} <: U1Parm
+    iL::Tuple{Int64,Int64}
+    beta::Float64
+    am0::A
+end
+export U1NfParm
 
 struct KernelParm
     threads::Tuple{Int64,Int64}
