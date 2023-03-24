@@ -24,7 +24,7 @@ function sample!(lftws::AbstractLFT, samplerparms::SamplerParameters)
 end
 export sample!
 
-function metropolis_accept_reject!(lftws::L, lftcp::L, dS::Float64) where L <: AbstractLFT
+function metropolis_accept_reject!(lftws::L, lftcp::L, samplerws::S, dS::Float64) where {L <: AbstractLFT, S <: AbstractSampler}
     pacc = exp(-dS)
     if (pacc < 1.0)
         r = rand()
