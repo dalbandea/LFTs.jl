@@ -3,6 +3,7 @@ import Pkg
 Pkg.activate(".")
 using LFTs
 using CUDAKernels
+using KernelAbstractions
 
 # Phi4
 
@@ -32,23 +33,29 @@ sampler = HMC(
 
 beta = 0.2
 lsize = 8
+device = KernelAbstractions.CPU()
 
-model = LFTs.U1Quenched(Float64, beta = beta, iL = (lsize, lsize))
+model = LFTs.U1Quenched(Float64, beta = beta, iL = (lsize, lsize), device = device)
 
 
 sampler = HMC(
-              integrator = Leapfrog(
-                                   1.0,
-                                   10
-                                  ),
+              integrator = Leapfrog(1.0, 10),
               ntherm = 10,
               ntraj = 100,
              )
-
 samplerws = LFTs.sampler(model, sampler)
 
-sample!(model, samplerws)
+@time sample!(model, samplerws)
 
+model_bckp = deepcopy(model)
+
+reversibility!(model, samplerws)
+
+ΔU = model.U .- model_bckp.U
+
+isapprox(zero(model.PRC), mapreduce(x -> abs2(x), +, ΔU), atol = 1e-15)
+
+mapreduce(x -> abs2(x), +, ΔU)
 
 # U1Nf2
 
