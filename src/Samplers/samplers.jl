@@ -55,6 +55,21 @@ Base.@kwdef mutable struct HMC <: HMCParams
 end
 export HMC
 
+Base.@kwdef mutable struct RHMC <: HMCParams
+	r_b::Float64
+	n::Int64
+	eps::Float64
+	A::Float64
+	rho::Vector{Float64}
+	mu::Vector{Float64}
+    nu::Vector{Float64}
+    delta::Float64
+    reweighting_N::Int64
+    reweighting_Taylor::Int64
+end
+export RHMC
+
+
 struct FallbackHMC <: AbstractHMC
     params::HMCParams
 end
