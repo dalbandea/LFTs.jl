@@ -2,6 +2,7 @@
 using KernelAbstractions
 import CUDA, CUDAKernels
 import AMDGPU, ROCKernels
+import Elliptic, Elliptic.Jacobi # for RHMC
 
 abstract type U1 <: AbstractLFT end
 abstract type U1Quenched <: U1 end
@@ -58,6 +59,9 @@ to_device(::CUDAKernels.CUDADevice, x) = CUDA.CuArray(x)
 to_device(::ROCKernels.ROCDevice, x) = AMDGPU.ROCArray(x)
 to_device(::KernelAbstractions.CPU, x) = x
 
+DevArray(::CUDAKernels.CUDADevice) = CUDA.CuArray
+DevArray(::ROCKernels.ROCDevice) = AMDGPU.ROCArray
+DevArray(::KernelAbstractions.CPU) = Array
 
 allowscalar(::KernelAbstractions.CPU) = nothing
 disallowscalar(::KernelAbstractions.CPU) = nothing
