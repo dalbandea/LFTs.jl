@@ -12,6 +12,9 @@ filepath1 = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTs.jl/results/trash/U1
 
 filepath2 = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTs.jl/results/trash/U1MassCheck/2023-01-20T15:25:53.056/measurements/corr_pcac.txt"
 
+filepath1 = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTs.jl/results/trash/U1CriticalMassCheck/2023-01-25T16:59:50.490/measurements/corr_pion.txt"
+filepath2 = "/home/david/git/dalbandea/phd/codes/6-LFTs/LFTs.jl/results/trash/U1CriticalMassCheck/2023-01-25T16:59:50.490/measurements/corr_pcac.txt"
+
 using DelimitedFiles
 
 # abstract type AbstractFunction <: UtilsFunc end
@@ -167,7 +170,7 @@ fitps = tmin_loop(f, xdata, ydata, 1,12, [0.1, 0.2], plot_column = 3)
 
 
 
-ws = CorrelatorAnalysis(filepath1, U1PionCorrelator, burnout = 1000, ensemble_ID = "test")
+ws = CorrelatorAnalysis(filepath1, U1PionCorrelator, burnout = 500, ensemble_ID = "test3")
 uwrealsym(ws)
 ws.tmax = 12
 
@@ -178,7 +181,7 @@ plot(ws.histories, seriestype=:scatter)
 plot(ws, seriestype=:scatter)
 
 
-ws2 = CorrelatorAnalysis(filepath2, U1PCACCorrelator, burnout = 1000, ensemble_ID = "test")
+ws2 = CorrelatorAnalysis(filepath2, U1PCACCorrelator, burnout = 500, ensemble_ID = "test3")
 uwrealsym(ws2)
 ws2.tmax = 12
 
@@ -190,4 +193,4 @@ mPCAC = 1/2 * ws2.ydata ./ ws.ydata[2:end-1]
 
 uwerr.(mPCAC)
 
-plot(1:length(mPCAC), mPCAC, xlims=(2, 16), ylims=(-0.30, -0.25), seriestype=:scatter)
+plot(1:length(mPCAC), mPCAC, seriestype=:scatter)
