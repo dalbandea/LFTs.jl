@@ -109,9 +109,9 @@ function pfaction(U1ws::U1Nf2, hmcws::AbstractHMC)
 end
 
 
-function top_charge(U1ws::U1, lp::LattParm)
-    return U1topcharge(U1ws.U, lp.beta, lp.iL[1], lp.iL[2], lp.device, lp.kprm.threads, lp.kprm.blocks)
-end
+# function top_charge(U1ws::U1, lp::LattParm)
+#     return U1topcharge(U1ws.U, lp.beta, lp.iL[1], lp.iL[2], lp.device, lp.kprm.threads, lp.kprm.blocks)
+# end
 
 function U1topcharge(U, beta, Nx, Ny, device, threads, blocks)
     plaquettes = to_device(device, zeros(Float64, Nx, Ny))
