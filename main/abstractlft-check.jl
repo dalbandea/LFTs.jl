@@ -31,12 +31,14 @@ sampler = HMC(
 
 # U1
 
-beta = 0.2
+beta = 11.25
 lsize = 8
 device = KernelAbstractions.CPU()
 
 model = LFTs.U1Quenched(Float64, beta = beta, iL = (lsize, lsize), device = device)
 
+# Ucp = copy(model.U)
+# model.U .= Ucp
 
 sampler = HMC(
               integrator = Leapfrog(1.0, 10),
@@ -46,6 +48,15 @@ sampler = HMC(
 samplerws = LFTs.sampler(model, sampler)
 
 @time sample!(model, samplerws)
+
+Qs = []
+Ss = []
+
+for i in 1:1000
+    @time sample!(model, samplerws)
+    push!(Qs, LFTs.top_charge(model))
+    push!(Ss, LFTs.action(model,samplerws))
+end
 
 model_bckp = deepcopy(model)
 
