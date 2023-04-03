@@ -24,7 +24,7 @@ function sample!(lftws::AbstractLFT, samplerparms::SamplerParameters)
 end
 export sample!
 
-function metropolis_accept_reject!(lftws::L, lftcp::L, samplerws::S, dS::Float64) where {L <: AbstractLFT, S <: AbstractSampler}
+function metropolis_accept_reject!(lftws::L, lftcp::L, dS::Float64) where {L <: AbstractLFT}
     pacc = exp(-dS)
     if (pacc < 1.0)
         r = rand()
@@ -38,6 +38,23 @@ function metropolis_accept_reject!(lftws::L, lftcp::L, samplerws::S, dS::Float64
         @info("    ACCEPT:  Energy [difference: $(dS)]")
     end
     return nothing
+end
+
+function accept_reject!(dS::Float64)
+    pacc = exp(-dS)
+    if (pacc < 1.0)
+        r = rand()
+        if (r > pacc) 
+            # @info("    REJECT: Energy [difference: $(dS)]")
+            return 0.0
+        else
+            # @info("    ACCEPT:  Energy [difference: $(dS)]")
+            return 1.0
+        end
+    else
+        # @info("    ACCEPT:  Energy [difference: $(dS)]")
+        return 1.0
+    end
 end
 
 
@@ -79,6 +96,8 @@ include("Metropolis/metropolis.jl")
 
 Base.@kwdef mutable struct Metropolis <: MetropolisParams
     weight::Float64 = 0.1
+    naccepted::Int64 = 0
+    nsampled::Int64 = 0
     ntherm::Int64 = 10
     ntraj::Int64 = 100
     nmeas::Int64 = 1
@@ -93,5 +112,12 @@ end
 sampler(lftws::AbstractLFT, hmcp::HMCParams) = FallbackHMC(hmcp)
 sample!(lftws::AbstractLFT, samplerws::AbstractHMC) = hmc!(lftws, samplerws)
 
-sampler(lftws::AbstractLFT, mp::MetropolisParams) = FallbackMetropolis(mp)
+function sampler(lftws::AbstractLFT, mp::MetropolisParams) 
+    samplerws = FallbackMetropolis(mp)
+    samplerws.params.naccepted = 0.0
+    samplerws.params.nsampled = 0.0
+    return samplerws
+end
 sample!(lftws::AbstractLFT, samplerws::AbstractMetropolis) = sweep!(lftws, samplerws)
+
+acceptance(samplerws::AbstractMetropolis) = samplerws.params.naccepted / samplerws.params.nsampled
