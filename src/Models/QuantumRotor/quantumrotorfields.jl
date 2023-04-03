@@ -40,6 +40,9 @@ function randomize!(qrws::QuantumRotor)
     return nothing
 end
 
+function coldstart!(qrws::QuantumRotor)
+    qrws.phi .= one(qrws.PRC)
+end
 
 #custom mod
 #changes mod domain from (0 to z) to (-z/2 to z/2)
