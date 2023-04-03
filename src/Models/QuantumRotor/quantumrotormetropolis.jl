@@ -7,26 +7,32 @@ end
 function sweep!(qrws::QuantumRotor, mws::AbstractMetropolis)
     for t in 1:qrws.params.iT
         update_variable!(qrws, mws, t)
+        # println(t)
     end
     return nothing
 end
 
 function update_variable!(qrws::QuantumRotor, mws::AbstractMetropolis, t::Int64)
 
-    ws_cp = deepcopy(qrws)
-
     #change in phi
     delta = mws.params.weight * randn()
 
-    sini = action(qrws)
+    sini = daction_t(qrws, t)
 
     qrws.phi[t] += delta
 
-    sfin = action(qrws)
+    sfin = daction_t(qrws, t)
 
-    ds = sfin - sini
+    dS = sfin - sini
 
-    metropolis_accept_reject!(qrws, ws_cp, ds)
+    accepted = accept_reject!(dS)
+
+    mws.params.nsampled += 1
+    if accepted == true
+        mws.params.naccepted += 1
+    else
+        qrws.phi[t] -= delta
+    end
 
     return nothing
 end
