@@ -13,7 +13,7 @@ action_t(qrws::QuantumRotor, t::Int64) = action_t(qrws, qrws.params.disc, t)
 function action_t(qrws::QuantumRotor, disc::Type{ClassicalPerfectDiscretization}, t::Int64)
     tu = right(qrws, t)
     ds = Mod(qrws.phi[tu] - qrws.phi[t], 2pi)^2
-    return ds
+    return ds * qrws.params.I  / 2
 end
 
 """
