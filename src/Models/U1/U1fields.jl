@@ -87,7 +87,7 @@ end
 
 sampler(lftws::U1Nf2, hmcp::HMCParams) = U1Nf2HMC(lftws, hmcp)
 
-function copy!(U1ws_dst::U1, U1ws_src::U1, lp::U1Parm)
+function copy!(U1ws_dst::U1, U1ws_src::U1)
     U1ws_dst.U .= U1ws_src.U
     return nothing
 end
