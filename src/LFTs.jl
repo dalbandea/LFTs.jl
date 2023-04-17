@@ -6,6 +6,7 @@ using LinearAlgebra
 
 abstract type AbstractLFT end
 abstract type LFTParm end
+abstract type AbstractDebugger end
 
 include("Samplers/samplers.jl")
 

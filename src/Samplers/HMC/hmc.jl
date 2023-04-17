@@ -14,15 +14,30 @@ function update_fields!(lftws::AbstractLFT, epsilon, hmcws::AbstractHMC) end
 
 ## Optional
 function generate_pseudofermions!(lftws::AbstractLFT, hmcws::AbstractHMC) end
+function debug_after_MD_step!(debugger::AbstractDebugger, lftws::AbstractLFT, hmcws::AbstractHMC) end
+function debug!(f::Function, debuggers::Vector{<:AbstractDebugger}, lftws::AbstractLFT, hmcws::AbstractHMC)
+    for debugger in debuggers
+        f(debugger, lftws, hmcws)
+    end
+    return nothing
+end
+function debug!(f::Function, debuggers::Nothing, lftws::AbstractLFT, hmcws::AbstractHMC)
+    return nothing
+end
 
-molecular_dynamics!(lftws::AbstractLFT, hmcws::AbstractHMC) =
-                        molecular_dynamics!(lftws, hmcws, hmcws.params.integrator)
-molecular_dynamics!(lftws::AbstractLFT, hmcws::AbstractHMC, integr::Leapfrog) =
-                        leapfrog!(lftws, hmcws, integr.epsilon, integr.nsteps)
+
+
+molecular_dynamics!(lftws::AbstractLFT, hmcws::AbstractHMC, debugger::Union{Vector{<:AbstractDebugger},Nothing} = nothing) =
+                        molecular_dynamics!(lftws, hmcws,
+                                            hmcws.params.integrator, debugger)
+molecular_dynamics!(lftws::AbstractLFT, hmcws::AbstractHMC, integr::Leapfrog, debugger::Union{Vector{<:AbstractDebugger},Nothing} = nothing) =
+                        leapfrog!(lftws, hmcws, integr.epsilon, integr.nsteps, debugger)
 molecular_dynamics!(lftws::AbstractLFT, hmcws::AbstractHMC, integr::OMF4) =
                         OMF4!(lftws, hmcws, integr.epsilon, integr.nsteps)
 
-function hmc!(lftws::AbstractLFT, hmcws::AbstractHMC)
+
+function hmc!(lftws::AbstractLFT, hmcws::AbstractHMC,
+        debugger::Union{Vector{<:AbstractDebugger}, Nothing} = nothing)
     # Create copy of current configuration
     ws_cp = deepcopy(lftws)
 
@@ -36,7 +51,7 @@ function hmc!(lftws::AbstractLFT, hmcws::AbstractHMC)
     hini = Hamiltonian(lftws, hmcws)
 
     # Molecular Dynamics
-    molecular_dynamics!(lftws, hmcws)
+    molecular_dynamics!(lftws, hmcws, debugger)
 
     # Compute final Hamiltonian
     hfin = Hamiltonian(lftws, hmcws)
@@ -58,7 +73,8 @@ function hmc!(lftws::AbstractLFT, hmcws::AbstractHMC)
     return dH
 end
 
-function leapfrog!(lftws::AbstractLFT, hmcws::AbstractHMC, epsilon, ns)
+function leapfrog!(lftws::AbstractLFT, hmcws::AbstractHMC, epsilon, ns,
+        debugger::Union{Vector{<:AbstractDebugger},Nothing} = nothing)
 
 	# First half-step for momenta
     update_momenta!(lftws, epsilon/2.0, hmcws)
@@ -68,8 +84,11 @@ function leapfrog!(lftws::AbstractLFT, hmcws::AbstractHMC, epsilon, ns)
 		# Update fields
         update_fields!(lftws, epsilon, hmcws) 
 
-		#Update momenta
+		# Update momenta
         update_momenta!(lftws, epsilon, hmcws)
+
+        # Debug after MD step
+        debug!(debug_after_MD_step!, debugger, lftws, hmcws)
 	end
 	# Last update for fields
     update_fields!(lftws, epsilon, hmcws) 

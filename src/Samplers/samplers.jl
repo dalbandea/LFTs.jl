@@ -33,4 +33,4 @@ struct FallbackHMC <: AbstractHMC
 end
 
 sampler(lftws::AbstractLFT, hmcp::HMCParams) = FallbackHMC(hmcp)
-sample!(lftws::AbstractLFT, samplerws::AbstractHMC) = hmc!(lftws, samplerws)
+sample!(lftws::AbstractLFT, samplerws::AbstractHMC, debugger::Union{Vector{<:AbstractDebugger},Nothing} = nothing) = hmc!(lftws, samplerws, debugger)
